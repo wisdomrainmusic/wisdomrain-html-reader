@@ -535,35 +535,57 @@ jQuery(function($){
      * Safe way to get Google Translate combo element.
      */
     function wrhrGetTranslateCombo() {
-        return document.querySelector('select.goog-te-combo');
+        // Only use the combo created inside our hidden container
+        return document.querySelector('#wrhr-google-container select.goog-te-combo');
+    }
+
+    function wrhrWaitForTranslateCombo(callback) {
+        var combo = wrhrGetTranslateCombo();
+        if (combo) {
+            callback(combo);
+            return;
+        }
+
+        var tries = 0;
+        var timer = setInterval(function() {
+            combo = wrhrGetTranslateCombo();
+            if (combo || tries > 50) {
+                clearInterval(timer);
+                if (combo) {
+                    callback(combo);
+                } else {
+                    console.warn('WRHR: Google Translate combo never appeared.');
+                }
+            }
+            tries++;
+        }, 200);
     }
 
     /**
      * Set language on Google Translate widget.
      */
     function wrhrSetLanguage(langCode) {
-        const googleCombo = document.querySelector("select.goog-te-combo");
+        // Wait until combo exists
+        wrhrWaitForTranslateCombo(function(combo) {
+            combo.value = langCode;
+            combo.dispatchEvent(new Event("change"));
 
-        if (!googleCombo) {
-            console.warn("Google Translate combo not ready yet.");
-            return;
-        }
-
-        googleCombo.value = langCode;
-        googleCombo.dispatchEvent(new Event("change"));
-
-        // Persist preference
-        localStorage.setItem("wrhr_last_lang", langCode);
+            try {
+                localStorage.setItem("wrhr_last_lang", langCode);
+            } catch (e) {}
+        });
     }
 
     /**
      * Force Google Translate to reapply translation after page content changes.
      */
     function wrhrTranslateRefresh() {
-        const saved = localStorage.getItem("wrhr_last_lang");
-        if (saved) {
-            wrhrSetLanguage(saved);
-        }
+        try {
+            var saved = localStorage.getItem('wrhr_last_lang');
+            if (saved) {
+                wrhrSetLanguage(saved);
+            }
+        } catch (e) {}
     }
 
     /**
@@ -680,14 +702,16 @@ jQuery(function($){
             option.addEventListener("click", () => {
                 const lang = option.getAttribute("data-lang");
 
-                // CONNECT DROPDOWN → GOOGLE ENGINE
+                // CONNECT DROPDOWN → TRANSLATE
                 wrhrSetLanguage(lang);
 
                 // Update UI
                 toggle.textContent = option.textContent + " ▼";
 
                 // Persist state
-                localStorage.setItem("wrhr_last_lang", lang);
+                try {
+                    localStorage.setItem("wrhr_last_lang", lang);
+                } catch (e) {}
 
                 menu.style.display = "none";
             });
