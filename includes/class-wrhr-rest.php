@@ -28,11 +28,17 @@ class WRHR_REST {
             return [ 'error' => 'empty html' ];
         }
 
-        // Remove Word garbage.
+        // Remove Word garbage (Mso classes, Word inline styles).
         $html = preg_replace( '/class="Mso.*?"/i', '', $html );
         $html = preg_replace( '/mso-[^:]+:[^;"]+;?/i', '', $html );
         $html = preg_replace( '/<span[^>]*?>/i', '', $html );
         $html = preg_replace( '/<\/span>/i', '', $html );
+
+        // Remove inline background or color styles coming from Word export.
+        // Examples: background:black; color:#000000; background-color:windowtext;
+        $html = preg_replace( '/background[^:]*:[^;\"]+;?/i', '', $html );
+        $html = preg_replace( '/background-color[^:]*:[^;\"]+;?/i', '', $html );
+        $html = preg_replace( '/color:[^;\"]+;?/i', '', $html );
 
         // Allow only safe tags.
         $allowed = [
