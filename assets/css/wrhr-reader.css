@@ -2,6 +2,46 @@
     --wrhr-a5-height: 744px;
 }
 
+/* ============================================
+   WRHR Phase 8.1 — FINAL FIX
+   Theme is forcing opacity:0.22, blend-mode
+   and brightness filters onto all WRHR text.
+   This block HARD-OVERRIDES all inherited
+   opacity / mix-blend-mode / filters so that
+   text becomes fully visible and crisp.
+   ============================================ */
+
+#wrhr-modal,
+#wrhr-modal *,
+#wrhr-modal *::before,
+#wrhr-modal *::after {
+    opacity: 1 !important;
+    mix-blend-mode: normal !important;
+    filter: none !important;
+    -webkit-filter: none !important;
+    backdrop-filter: none !important;
+    color: #1c1a18 !important; /* ensure readable text */
+}
+
+/* Strengthen heading visibility */
+#wrhr-modal h1,
+#wrhr-modal h2,
+#wrhr-modal h3,
+#wrhr-modal h4,
+#wrhr-modal h5,
+#wrhr-modal h6 {
+    opacity: 1 !important;
+    color: #111 !important;
+}
+
+/* Strengthen paragraph visibility */
+#wrhr-modal p,
+#wrhr-modal span,
+#wrhr-modal li {
+    opacity: 1 !important;
+    color: #1c1a18 !important;
+}
+
 /* --- Modal Overlay --- */
 #wrhr-modal {
     position: fixed;
