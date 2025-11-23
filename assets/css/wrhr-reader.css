@@ -102,3 +102,21 @@
 #wrhr-next {
     padding: 8px 14px;
 }
+
+#wrhr-modal h1,
+#wrhr-modal h2,
+#wrhr-modal h3,
+#wrhr-modal h4,
+#wrhr-modal h5,
+#wrhr-modal h6 {
+    margin: 0 0 12px;
+    color: #2d2a2a;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+#wrhr-modal h4 {
+    color: #b8860b;
+    opacity: 1;
+    visibility: visible;
+}
