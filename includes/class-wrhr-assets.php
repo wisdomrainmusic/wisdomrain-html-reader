@@ -18,6 +18,8 @@ class WRHR_Assets {
     public static function enqueue_frontend() {
         $base_url = plugin_dir_url( WRHR_PLUGIN_FILE );
 
+        $flags_base_url = WRHR_Languages::get_flags_base_url();
+
         wp_enqueue_style(
             'wrhr-style',
             $base_url . 'assets/css/wrhr-style.css',
@@ -51,10 +53,27 @@ class WRHR_Assets {
                 'root' => esc_url_raw( rest_url() ),
             )
         );
+
+        wp_localize_script(
+            'wrhr-renderer',
+            'wrhrLangConfig',
+            array(
+                'languages'        => WRHR_Languages::as_client_payload(),
+                'flags_base_url'   => esc_url_raw( $flags_base_url ),
+                'storage_keys'     => array(
+                    'last_lang'        => 'wrhr_last_lang',
+                    'last_page_prefix' => 'wrhr_last_page_',
+                ),
+                'google_selectors' => array(
+                    'combo' => 'select.goog-te-combo',
+                ),
+            )
+        );
     }
 
     /** Render the global reader modal markup. */
     public static function render_modal() {
+        $flags_base_url = WRHR_Languages::get_flags_base_url();
         ?>
         <div id="wrhr-modal" class="wrhr-modal" aria-hidden="true">
 
@@ -66,11 +85,31 @@ class WRHR_Assets {
                 <button class="wrhr-fs-btn" id="wrhr-fs-btn">⤢</button>
 
                 <div class="wrhr-modal-header">
-                    <h3 class="wrhr-modal-title" id="wrhr-modal-title"></h3>
+                    <div class="wrhr-modal-header-main">
+                        <h3 class="wrhr-modal-title" id="wrhr-modal-title"></h3>
 
-                    <!-- MINI NOTICE: Fullscreen Suggested -->
-                    <div class="wrhr-notice-mini">
-                        Full screen mode recommended
+                        <!-- MINI NOTICE: Fullscreen Suggested -->
+                        <div class="wrhr-notice-mini">
+                            Full screen mode recommended
+                        </div>
+                    </div>
+
+                    <div class="wrhr-lang-switcher notranslate" id="wrhr-lang-switcher" aria-label="Translate language chooser">
+                        <?php foreach ( WRHR_Languages::all() as $lang ) :
+                            $flag = $flags_base_url . $lang['flag'];
+                            ?>
+                            <button
+                                type="button"
+                                class="wrhr-lang-btn notranslate"
+                                data-lang="<?php echo esc_attr( $lang['code'] ); ?>"
+                                data-google="<?php echo esc_attr( $lang['google_code'] ); ?>"
+                                aria-label="<?php echo esc_attr( $lang['label'] ); ?>">
+                                <img
+                                    src="<?php echo esc_url( $flag ); ?>"
+                                    alt="<?php echo esc_attr( $lang['label'] ); ?>"
+                                    class="notranslate" />
+                            </button>
+                        <?php endforeach; ?>
                     </div>
                 </div>
 

@@ -4,6 +4,160 @@ jQuery(function($){
     let pageWrapper = $('#wrhr-page-wrapper');
     let WRHR_PAGES = [];
     let WRHR_INDEX = 0;
+    let WRHR_ACTIVE_READER = '';
+    let WRHR_ACTIVE_BOOK_INDEX = null;
+
+    const wrhrLangConfig = window.wrhrLangConfig || {};
+    const WRHR_STORAGE_KEYS = wrhrLangConfig.storage_keys || {};
+    const WRHR_LAST_LANG_KEY = WRHR_STORAGE_KEYS.last_lang || 'wrhr_last_lang';
+    const WRHR_LAST_PAGE_PREFIX = WRHR_STORAGE_KEYS.last_page_prefix || 'wrhr_last_page_';
+
+    const wrhrTranslate = {
+        languages: wrhrLangConfig.languages || [],
+        selectors: wrhrLangConfig.google_selectors || {},
+        currentLanguage: null,
+        container: null,
+        combo: null,
+
+        init() {
+            this.container = $('#wrhr-lang-switcher');
+            this.bindUI();
+            this.restoreLastLanguage();
+        },
+
+        bindUI() {
+            if (!this.container || !this.container.length) {
+                return;
+            }
+
+            this.container.on('click', '.wrhr-lang-btn', (event) => {
+                const btn = event.currentTarget;
+                const code = btn.dataset ? btn.dataset.lang : null;
+                if (!code) {
+                    return;
+                }
+                this.setLanguage(code, { persist: true });
+            });
+        },
+
+        highlightActive(code) {
+            if (!this.container || !this.container.length) {
+                return;
+            }
+
+            this.container.find('.wrhr-lang-btn').removeClass('is-active');
+            if (!code) {
+                return;
+            }
+
+            this.container.find(`.wrhr-lang-btn[data-lang="${code}"]`).addClass('is-active');
+        },
+
+        restoreLastLanguage() {
+            const stored = localStorage.getItem(WRHR_LAST_LANG_KEY);
+            if (!stored) {
+                return;
+            }
+            this.setLanguage(stored, { persist: false, silent: true });
+        },
+
+        setLanguage(code, options = {}) {
+            const language = this.languages.find((item) => item.code === code);
+            if (!language) {
+                return;
+            }
+
+            this.currentLanguage = language;
+            this.highlightActive(language.code);
+
+            if (options.persist !== false) {
+                localStorage.setItem(WRHR_LAST_LANG_KEY, language.code);
+            }
+
+            if (!options.silent) {
+                this.applyToGoogle(language);
+            } else {
+                this.applyToGoogle(language, true);
+            }
+
+            $(document).trigger('wrhr_translate_language_changed', { language });
+        },
+
+        getGoogleCombo() {
+            if (this.combo && document.body.contains(this.combo)) {
+                return this.combo;
+            }
+
+            if (!this.selectors.combo) {
+                return null;
+            }
+
+            const el = document.querySelector(this.selectors.combo);
+            if (el) {
+                this.combo = el;
+            }
+
+            return el || null;
+        },
+
+        applyToGoogle(language, silent = false) {
+            const combo = this.getGoogleCombo();
+            if (!combo) {
+                return;
+            }
+
+            combo.value = language.google_code;
+
+            const changeEvent = document.createEvent('HTMLEvents');
+            changeEvent.initEvent('change', true, true);
+            combo.dispatchEvent(changeEvent);
+
+            if (!silent) {
+                combo.dispatchEvent(new Event('blur'));
+            }
+        },
+
+        refresh() {
+            if (!this.currentLanguage) {
+                return;
+            }
+
+            this.applyToGoogle(this.currentLanguage);
+        },
+    };
+
+    window.wrhrTranslate = wrhrTranslate;
+    wrhrTranslate.init();
+
+    function getLastPageKey() {
+        if (!WRHR_ACTIVE_READER) {
+            return null;
+        }
+        return `${WRHR_LAST_PAGE_PREFIX}${WRHR_ACTIVE_READER}`;
+    }
+
+    function restoreLastPage(total) {
+        const key = getLastPageKey();
+        if (!key) {
+            return 0;
+        }
+
+        const stored = parseInt(localStorage.getItem(key), 10);
+        if (Number.isFinite(stored) && stored >= 0 && stored < total) {
+            return stored;
+        }
+
+        return 0;
+    }
+
+    function persistPageIndex(index) {
+        const key = getLastPageKey();
+        if (!key) {
+            return;
+        }
+
+        localStorage.setItem(key, String(index));
+    }
 
     async function loadHTML(url){
         try {
@@ -296,6 +450,16 @@ jQuery(function($){
         const url = $(this).data('html');
         const wrapper = this.closest('.wrhr-reader-wrapper');
         const title = wrapper && wrapper.dataset ? wrapper.dataset.title : '';
+        WRHR_ACTIVE_READER = $(this).data('reader') || '';
+        const parsedIndex = parseInt($(this).data('index'), 10);
+        WRHR_ACTIVE_BOOK_INDEX = Number.isFinite(parsedIndex) ? parsedIndex : null;
+
+        $(document).trigger('wrhr_modal_opened', {
+            readerId: WRHR_ACTIVE_READER,
+            bookIndex: WRHR_ACTIVE_BOOK_INDEX,
+        });
+
+        wrhrTranslate.restoreLastLanguage();
 
         modal.addClass('active');
         $('body').addClass('wrhr-modal-open');
@@ -315,7 +479,9 @@ jQuery(function($){
             WRHR_PAGES = ['<div class="wrhr-page"><p>No readable content found.</p></div>'];
         }
 
-        renderPage(0);
+        const initialPage = restoreLastPage(WRHR_PAGES.length);
+        renderPage(initialPage);
+        wrhrTranslate.refresh();
 
     });
 
@@ -352,6 +518,17 @@ jQuery(function($){
         WRHR_INDEX = i;
         pageWrapper.html( WRHR_PAGES[i] );
         $('#wrhr-page-info').text(`Page ${i+1} / ${WRHR_PAGES.length}`);
+
+        persistPageIndex(WRHR_INDEX);
+
+        $(document).trigger('wrhr_page_changed', {
+            page: WRHR_INDEX + 1,
+            total: WRHR_PAGES.length,
+            readerId: WRHR_ACTIVE_READER,
+            bookIndex: WRHR_ACTIVE_BOOK_INDEX,
+        });
+
+        wrhrTranslate.refresh();
     }
 
     $('#wrhr-next').on('click', function(){
