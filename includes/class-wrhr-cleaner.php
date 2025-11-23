@@ -6,9 +6,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * WRHR_Cleaner
  *
- * Word / Mammoth kaynaklı HTML içerikleri A5/A6 reader için
- * temizleyen DOM tabanlı motor. WRPR PDF Reader'daki temizleyicinin
- * sadeleştirilmiş ve WRHR'e uyarlanmış sürümü.
+ * Word / Mammoth kaynaklı HTML içeriklerini WRPR PDF Reader mantığıyla
+ * güvenli biçimde temizler; içerik node'larını silmeden sarmalayıcıları
+ * açar ve reader tarafına stabil, bloklanabilir HTML bırakır.
  */
 class WRHR_Cleaner {
 
@@ -25,15 +25,7 @@ class WRHR_Cleaner {
             return $raw_html;
         }
 
-        $sanitizable_html = $raw_html;
-
-        // Eğer full HTML yapısı yoksa body ile sar.
-        if ( false === stripos( $sanitizable_html, '<html' ) || false === stripos( $sanitizable_html, '<body' ) ) {
-            $sanitizable_html = '<html><body>' . $sanitizable_html . '</body></html>';
-        }
-
-        // <b> → <strong>
-        $sanitizable_html = str_replace( array( '<b', '</b>' ), array( '<strong', '</strong>' ), $sanitizable_html );
+        $sanitizable_html = self::ensure_document_shell( $raw_html );
 
         $flags = defined( 'LIBXML_HTML_NOIMPLIED' )
             ? LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
@@ -46,14 +38,10 @@ class WRHR_Cleaner {
 
         $xpath = new DOMXPath( $dom );
 
-        // Yorum, script ve style tag'larını kaldır.
-        foreach ( iterator_to_array( $xpath->query( '//comment() | //script | //style' ) ) as $node ) {
-            $node->parentNode->removeChild( $node );
-        }
-
-        self::unwrap_spans( $xpath );
-        self::strip_attributes( $xpath );
+        self::remove_noise_nodes( $xpath );
+        self::unwrap_tags( $xpath, array( 'span', 'font', 'section', 'article' ) );
         self::normalize_headings( $dom, $xpath );
+        self::strip_attributes( $xpath );
         self::flatten_disallowed_tags( $xpath );
         self::remove_empty_blocks( $xpath );
 
@@ -77,56 +65,96 @@ class WRHR_Cleaner {
     }
 
     /**
-     * <span> etiketlerini içindeki text'i koruyarak kaldır.
+     * Ensure the input can be parsed as a full HTML document.
      */
-    private static function unwrap_spans( DOMXPath $xpath ) {
-        $spans = iterator_to_array( $xpath->query( '//span' ) );
-        foreach ( $spans as $span ) {
-            while ( $span->firstChild ) {
-                $span->parentNode->insertBefore( $span->firstChild, $span );
-            }
-            if ( $span->parentNode ) {
-                $span->parentNode->removeChild( $span );
+    private static function ensure_document_shell( $html ) {
+        $sanitizable_html = $html;
+
+        // Word çıktıları bazen <body> içerisine gömülü değil; güvenli bir kabuk ekle.
+        if ( false === stripos( $sanitizable_html, '<html' ) || false === stripos( $sanitizable_html, '<body' ) ) {
+            $sanitizable_html = '<html><body>' . $sanitizable_html . '</body></html>';
+        }
+
+        // <b> → <strong> ile temel semantik düzenleme.
+        $sanitizable_html = str_replace( array( '<b', '</b>' ), array( '<strong', '</strong>' ), $sanitizable_html );
+
+        return $sanitizable_html;
+    }
+
+    /**
+     * Remove comments, script and style nodes.
+     */
+    private static function remove_noise_nodes( DOMXPath $xpath ) {
+        foreach ( iterator_to_array( $xpath->query( '//comment() | //script | //style' ) ) as $node ) {
+            if ( $node->parentNode ) {
+                $node->parentNode->removeChild( $node );
             }
         }
     }
 
     /**
-     * Tüm inline attribute'ları temizle.
-     * Sadece <a href="..."> attribute'unu koruyoruz.
+     * Unwrap given tag names while keeping children in place.
+     */
+    private static function unwrap_tags( DOMXPath $xpath, array $tags ) {
+        $paths = array();
+
+        foreach ( $tags as $tag ) {
+            $paths[] = '//' . strtolower( $tag );
+        }
+
+        if ( empty( $paths ) ) {
+            return;
+        }
+
+        $selector = implode( ' | ', $paths );
+        $nodes    = iterator_to_array( $xpath->query( $selector ) );
+
+        foreach ( $nodes as $node ) {
+            while ( $node->firstChild ) {
+                $node->parentNode->insertBefore( $node->firstChild, $node );
+            }
+            if ( $node->parentNode ) {
+                $node->parentNode->removeChild( $node );
+            }
+        }
+    }
+
+    /**
+     * Keep useful attributes while stripping inline noise.
      */
     private static function strip_attributes( DOMXPath $xpath ) {
-        $nodes = iterator_to_array( $xpath->query( '//*' ) );
+        $allowed_global = array( 'colspan', 'rowspan', 'scope' );
+        $nodes          = iterator_to_array( $xpath->query( '//*' ) );
 
         foreach ( $nodes as $node ) {
             if ( ! $node->hasAttributes() ) {
                 continue;
             }
 
-            $to_remove = array();
+            $tag        = strtolower( $node->nodeName );
+            $attributes = iterator_to_array( $node->attributes );
 
-            foreach ( iterator_to_array( $node->attributes ) as $attr ) {
-                $name  = strtolower( $attr->name );
-                $tag   = strtolower( $node->nodeName );
+            foreach ( $attributes as $attr ) {
+                $name = strtolower( $attr->name );
 
-                // Sadece link href'ini koru.
                 if ( 'a' === $tag && 'href' === $name ) {
                     continue;
                 }
 
-                $to_remove[] = $attr->name;
-            }
+                if ( in_array( $name, $allowed_global, true ) ) {
+                    continue;
+                }
 
-            foreach ( $to_remove as $name ) {
-                $node->removeAttribute( $name );
+                $node->removeAttribute( $attr->name );
             }
         }
     }
 
     /**
-     * H2'leri H3'e normalize et (reader hiyerarşisi için).
+     * Normalize heading levels to avoid missing TOC items.
      */
     private static function normalize_headings( DOMDocument $dom, DOMXPath $xpath ) {
+        // Word bazen H2 üretir; reader hiyerarşisini korumak için H3'e indir.
         $h2_nodes = iterator_to_array( $xpath->query( '//h2' ) );
         foreach ( $h2_nodes as $h2 ) {
             $h3 = $dom->createElement( 'h3' );
@@ -140,12 +168,38 @@ class WRHR_Cleaner {
     }
 
     /**
-     * İzin verilmeyen tüm tag'ları düzleştir.
-     * Çocuklarını bir üst seviyeye taşı, kendi node'u sil.
+     * Flatten unsupported tags by unwrapping rather than deleting content.
      */
     private static function flatten_disallowed_tags( DOMXPath $xpath ) {
-        $allowed = array( 'body', 'h1', 'h3', 'h4', 'p', 'ul', 'ol', 'li', 'strong', 'em', 'b', 'i', 'a' );
-        $nodes   = iterator_to_array( $xpath->query( '//*' ) );
+        $allowed = array(
+            'html',
+            'body',
+            'div',
+            'p',
+            'h1',
+            'h2',
+            'h3',
+            'h4',
+            'h5',
+            'h6',
+            'ul',
+            'ol',
+            'li',
+            'strong',
+            'em',
+            'b',
+            'i',
+            'a',
+            'table',
+            'thead',
+            'tbody',
+            'tr',
+            'td',
+            'th',
+            'br',
+        );
+
+        $nodes = iterator_to_array( $xpath->query( '//*' ) );
 
         foreach ( $nodes as $node ) {
             $name = strtolower( $node->nodeName );
@@ -156,6 +210,7 @@ class WRHR_Cleaner {
             while ( $node->firstChild ) {
                 $node->parentNode->insertBefore( $node->firstChild, $node );
             }
+
             if ( $node->parentNode ) {
                 $node->parentNode->removeChild( $node );
             }
@@ -163,12 +218,12 @@ class WRHR_Cleaner {
     }
 
     /**
-     * Boş blokları (p, h1, h3, h4, li) temizle.
+     * Remove empty, presentation-only blocks without deleting real text nodes.
      */
     private static function remove_empty_blocks( DOMXPath $xpath ) {
-        $blocks = iterator_to_array( $xpath->query( '//p | //h1 | //h3 | //h4 | //li' ) );
+        $targets = iterator_to_array( $xpath->query( '//p | //h1 | //h2 | //h3 | //h4 | //h5 | //h6 | //li | //div' ) );
 
-        foreach ( $blocks as $node ) {
+        foreach ( $targets as $node ) {
             $text        = trim( $node->textContent );
             $has_element = false;
 
@@ -179,6 +234,7 @@ class WRHR_Cleaner {
                 }
             }
 
+            // Boş, gereksiz wrapper'ları temizle; içerikli olanları bırak.
             if ( '' === $text && false === $has_element && $node->parentNode ) {
                 $node->parentNode->removeChild( $node );
             }
