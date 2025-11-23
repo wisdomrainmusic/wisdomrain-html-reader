@@ -52,6 +52,7 @@ $reader_books = ! empty( $reader['books'] ) && is_array( $reader['books'] ) ? $r
                         <button
                             class="wrhr-read-btn"
                             data-html="<?php echo esc_attr( $html_url ); ?>"
+                            data-reader-id="<?php echo esc_attr( $reader_id ); ?>"
                             data-reader="<?php echo esc_attr( $reader_id ); ?>"
                             data-index="<?php echo esc_attr( intval( $i ) ); ?>">
                             <?php esc_html_e( 'Read', 'wisdomrain-html-reader' ); ?>

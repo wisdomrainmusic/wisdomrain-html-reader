@@ -118,6 +118,15 @@ class WRHR_Languages {
      * @return array<int, array<string, string>>
      */
     public static function all() {
+        return self::get_languages();
+    }
+
+    /**
+     * Alias for the ordered language registry.
+     *
+     * @return array<int, array<string, string>>
+     */
+    public static function get_languages() {
         return self::LANGUAGES;
     }
 
@@ -128,6 +137,23 @@ class WRHR_Languages {
      */
     public static function get_flags_base_url() {
         return trailingslashit( plugin_dir_url( WRHR_PLUGIN_FILE ) . 'assets/flags' );
+    }
+
+    /**
+     * Provide a simplified language map for script localization.
+     *
+     * @return array<int, array<string, string>>
+     */
+    public static function get_js_config() {
+        return array_map(
+            static function( $lang ) {
+                return array(
+                    'code'  => $lang['code'],
+                    'label' => $lang['label'],
+                );
+            },
+            self::get_languages()
+        );
     }
 
     /**
@@ -145,7 +171,7 @@ class WRHR_Languages {
                     'flag'        => $lang['flag'],
                 );
             },
-            self::LANGUAGES
+            self::get_languages()
         );
     }
 }
