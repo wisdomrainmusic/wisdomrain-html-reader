@@ -65,6 +65,10 @@ class WRHR_Assets {
                 <button class="wrhr-close" id="wrhr-close">×</button>
                 <button class="wrhr-fs-btn" id="wrhr-fs-btn">⤢</button>
 
+                <div class="wrhr-modal-header">
+                    <h3 class="wrhr-modal-title" id="wrhr-modal-title"></h3>
+                </div>
+
                 <div class="wrhr-reader-container">
                     <div id="wrhr-page-wrapper"></div>
                 </div>

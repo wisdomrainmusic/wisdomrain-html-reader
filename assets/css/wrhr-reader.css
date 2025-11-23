@@ -1,3 +1,16 @@
+/* --- Theme & legacy reset --- */
+#wrhr-modal *,
+#wrhr-modal *::before,
+#wrhr-modal *::after {
+    background: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+}
+
+:root {
+    --wrhr-a5-height: 744px;
+}
+
 /* --- Modal Overlay --- */
 .wrhr-modal {
     position: fixed;
@@ -7,6 +20,7 @@
     justify-content: center;
     align-items: center;
     z-index: 999999;
+    color: #000;
 }
 
 .wrhr-modal.active {
@@ -21,7 +35,7 @@
 
 .wrhr-modal-content {
     position: relative;
-    background: #fdfbf5;
+    background: #ffffff !important;
     border-radius: 10px;
     padding: 0;
     width: 92%;
@@ -29,6 +43,12 @@
     max-height: 92vh;
     display: flex;
     flex-direction: column;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.wrhr-modal-content * {
+    font-family: inherit !important;
+    line-height: 1.5 !important;
 }
 
 .wrhr-modal-content.fullscreen {
@@ -39,34 +59,48 @@
     border-radius: 0 !important;
 }
 
+.wrhr-modal-header {
+    padding: 14px 18px 10px;
+    text-align: center;
+    border-bottom: 1px solid #f0ebde;
+}
+
+.wrhr-modal-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
 /* Close + Fullscreen buttons */
 .wrhr-close,
 .wrhr-fs-btn {
     position: absolute;
     top: 8px;
     right: 8px;
-    background: #b8860b;
-    color: white;
-    border: none;
+    background: transparent;
+    color: #000;
+    border: 1px solid #d4c7a1;
     padding: 6px 10px;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
     z-index: 20;
 }
 
 .wrhr-fs-btn {
-    right: 45px;
+    right: 48px;
 }
 
-:root {
-    --wrhr-a5-height: 744px;
+.wrhr-close:hover,
+.wrhr-fs-btn:hover {
+    border-color: #b8860b;
 }
 
-/* --- Page Wrapper (A5 Height) --- */
+/* --- Page Wrapper (A6 Height) --- */
 .wrhr-reader-container {
     flex: 1;
     overflow: hidden;
-    padding: 20px;
+    padding: 8px 16px 0;
     box-sizing: border-box;
 }
 
@@ -74,33 +108,45 @@
     height: var(--wrhr-a5-height);
     overflow: hidden;
     position: relative;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
 }
 
 .wrhr-page {
     height: var(--wrhr-a5-height);
     overflow: hidden;
     page-break-after: always;
-    font-family: Georgia, serif;
     font-size: 18px;
-    line-height: 1.46;
-    padding: 14px;
-    background: #fffdf5;
-    border: 1px solid #e9d9a1;
+    line-height: 1.5;
+    padding: 12px 18px 14px;
+    background: #ffffff !important;
+    border: 1px solid #e8e2c8;
     border-radius: 8px;
-}
-
-/* Controls */
-.wrhr-controls {
+    box-sizing: border-box;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 12px;
-    gap: 15px;
+    flex-direction: column;
+    gap: 0;
 }
 
-#wrhr-prev,
-#wrhr-next {
-    padding: 8px 14px;
+.wrhr-page .wrhr-block {
+    margin: 0 0 12px;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.wrhr-page .wrhr-block:last-child {
+    margin-bottom: 0;
+}
+
+.wrhr-page p {
+    margin: 0 0 12px;
+}
+
+.wrhr-page p:last-child {
+    margin-bottom: 0;
 }
 
 #wrhr-modal h1,
@@ -109,14 +155,52 @@
 #wrhr-modal h4,
 #wrhr-modal h5,
 #wrhr-modal h6 {
-    margin: 0 0 12px;
-    color: #2d2a2a;
+    margin: 0 0 14px;
+    color: #1f1c1c;
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.2 !important;
+    letter-spacing: 0.01em;
 }
 
-#wrhr-modal h4 {
+#wrhr-modal h1 { font-size: 30px; }
+#wrhr-modal h2 { font-size: 26px; }
+#wrhr-modal h3 { font-size: 22px; }
+#wrhr-modal h4 { font-size: 20px; }
+
+/* Controls */
+.wrhr-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 16px 16px;
+    gap: 14px;
+    border-top: 1px solid #f0ebde;
+    background: transparent;
+}
+
+.wrhr-controls button {
+    padding: 8px 14px;
+    min-width: 72px;
+    border: 1px solid #d4c7a1;
+    border-radius: 6px;
+    background: transparent;
+    color: #000;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.wrhr-controls button:hover,
+.wrhr-controls button:focus {
+    border-color: #b8860b;
     color: #b8860b;
-    opacity: 1;
-    visibility: visible;
+}
+
+.wrhr-controls button:active {
+    border-color: #8b6c0a;
+    color: #8b6c0a;
+}
+
+#wrhr-page-info {
+    font-size: 14px;
+    color: #4a4230;
 }
