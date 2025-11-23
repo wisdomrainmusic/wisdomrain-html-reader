@@ -464,6 +464,7 @@ jQuery(function($){
         const initialPage = restoreLastPage(WRHR_PAGES.length);
         renderPage(initialPage);
         wrhrTranslate.refresh();
+        wrhrTranslateRefresh();
 
     });
 
@@ -511,6 +512,7 @@ jQuery(function($){
         });
 
         wrhrTranslate.refresh();
+        wrhrTranslateRefresh();
     }
 
     $('#wrhr-next').on('click', function(){
@@ -539,38 +541,30 @@ jQuery(function($){
     /**
      * Set language on Google Translate widget.
      */
-    window.wrhrSetLanguage = function (langCode) {
-        const combo = wrhrGetTranslateCombo();
-        if (!combo) return;
+    function wrhrSetLanguage(langCode) {
+        const googleCombo = document.querySelector("select.goog-te-combo");
 
-        combo.value = langCode;
-        combo.dispatchEvent(new Event('change'));
+        if (!googleCombo) {
+            console.warn("Google Translate combo not ready yet.");
+            return;
+        }
 
-        // Save last used language
-        try {
-            localStorage.setItem('wrhr_last_lang', langCode);
-        } catch (e) {}
-    };
+        googleCombo.value = langCode;
+        googleCombo.dispatchEvent(new Event("change"));
+
+        // Persist preference
+        localStorage.setItem("wrhr_last_lang", langCode);
+    }
 
     /**
      * Force Google Translate to reapply translation after page content changes.
      */
-    window.wrhrTranslateRefresh = function () {
-        const combo = wrhrGetTranslateCombo();
-        if (!combo) return;
-
-        const lang = combo.value;
-        if (!lang) return;
-
-        // Reset & reapply trick
-        combo.value = '';
-        combo.dispatchEvent(new Event('change'));
-
-        setTimeout(() => {
-            combo.value = lang;
-            combo.dispatchEvent(new Event('change'));
-        }, 120);
-    };
+    function wrhrTranslateRefresh() {
+        const saved = localStorage.getItem("wrhr_last_lang");
+        if (saved) {
+            wrhrSetLanguage(saved);
+        }
+    }
 
     /**
      * Restore last language on modal open.
@@ -654,6 +648,7 @@ jQuery(function($){
     // Whenever modal opens, restore language
     document.addEventListener('wrhr_modal_opened', function () {
         wrhrRestoreLastLanguage();
+        wrhrTranslateRefresh();
     });
 
     // Final safety refresh after resize events
@@ -685,23 +680,21 @@ jQuery(function($){
             option.addEventListener("click", () => {
                 const lang = option.getAttribute("data-lang");
 
-                // Apply translate language
+                // CONNECT DROPDOWN → GOOGLE ENGINE
                 wrhrSetLanguage(lang);
-                wrhrTranslateRefresh();
 
-                // Save user preference
-                localStorage.setItem(WRHR_LAST_LANG_KEY, lang);
-
-                // Update button text
+                // Update UI
                 toggle.textContent = option.textContent + " ▼";
 
-                // Close menu
+                // Persist state
+                localStorage.setItem("wrhr_last_lang", lang);
+
                 menu.style.display = "none";
             });
         });
 
         /* Restore last language */
-        const saved = localStorage.getItem(WRHR_LAST_LANG_KEY);
+        const saved = localStorage.getItem('wrhr_last_lang');
         if (saved) {
             const match = menu.querySelector(`[data-lang="${saved}"]`);
             if (match) toggle.textContent = match.textContent + " ▼";
