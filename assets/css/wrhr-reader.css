@@ -257,8 +257,15 @@ body.wrhr-modal-open {
 }
 
 #wrhr-page-info {
-    font-size: 14px;
-    color: #4a4230;
+    background: #FFF7E2 !important;       /* gold/ivory tone */
+    color: #1c1a18 !important;            /* readable text */
+    padding: 6px 14px !important;
+    border: 1px solid #C9B98A !important; /* subtle gold border */
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    display: inline-block !important;
+    text-align: center !important;
+    line-height: 1.2 !important;
 }
 
 /* ====== WRHR Phase 8 – Typography Polish ====== */

@@ -260,14 +260,28 @@ jQuery(function($){
         return fragments;
     }
 
-    function calcA5Height(){
-        let h = Math.min(
-            window.innerHeight * 0.90,
-            (window.innerWidth * 1.414)
-        );
+    /* Phase 9 – Responsive A5/A6 Height Logic Fix */
+    function calcA5Height() {
+
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        let h;
+
+        // Mobile: keep A6 ratio
+        if (width < 768) {
+            h = width * 1.414; 
+        }
+        // Desktop + Tablet: use viewport height
+        else {
+            h = height * 0.88;
+        }
+
+        // Fallback
         if (!isFinite(h) || h <= 0) {
             h = 744;
         }
+
         document.documentElement.style.setProperty('--wrhr-a5-height', h + 'px');
     }
 
