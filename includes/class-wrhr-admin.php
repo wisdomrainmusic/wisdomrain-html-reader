@@ -20,6 +20,8 @@ class WRHR_Admin {
      * Register a top-level admin menu.
      */
     public static function register_menu() {
+        add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_assets' ) );
+
         add_menu_page(
             __( 'WisdomRain Reader', 'wisdomrain-html-reader' ),
             __( 'WR HTML Reader', 'wisdomrain-html-reader' ),
@@ -64,6 +66,37 @@ class WRHR_Admin {
             self::CAPABILITY,
             'wrhr-reader-settings',
             array( self::class, 'render_settings_page' )
+        );
+    }
+
+    /**
+     * Enqueue admin assets on plugin pages.
+     *
+     * @param string $hook Hook suffix for the current admin page.
+     */
+    public static function enqueue_assets( $hook ) {
+        $page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+
+        if ( ! $page ) {
+            return;
+        }
+
+        $allowed_pages = array(
+            self::MENU_SLUG,
+            'wrhr-manage-readers',
+            'wrhr-reader-edit',
+            'wrhr-reader-settings',
+        );
+
+        if ( ! in_array( $page, $allowed_pages, true ) ) {
+            return;
+        }
+
+        wp_enqueue_style(
+            'wrhr-admin',
+            plugins_url( 'assets/css/wrhr-style.css', WRHR_PLUGIN_FILE ),
+            array(),
+            WRHR_VERSION
         );
     }
 
@@ -143,11 +176,57 @@ class WRHR_Admin {
     }
 
     /**
-     * Render reader edit page placeholder.
+     * Render reader edit page.
      */
     public static function render_reader_edit_page() {
         self::ensure_capability();
-        self::render_template( 'admin-reader-edit.php' );
+
+        $id     = isset( $_GET['id'] ) ? sanitize_text_field( wp_unslash( $_GET['id'] ) ) : '';
+        $reader = WRHR_Readers::get( $id );
+
+        if ( ! $reader ) {
+            echo '<h1>Reader not found.</h1>';
+            return;
+        }
+
+        $notice = '';
+
+        if ( ! empty( $_POST['wrhr_save_books'] ) ) {
+            check_admin_referer( 'wrhr_save_books' );
+
+            $titles   = isset( $_POST['wrhr_title'] ) ? (array) wp_unslash( $_POST['wrhr_title'] ) : array();
+            $authors  = isset( $_POST['wrhr_author'] ) ? (array) wp_unslash( $_POST['wrhr_author'] ) : array();
+            $urls     = isset( $_POST['wrhr_html_url'] ) ? (array) wp_unslash( $_POST['wrhr_html_url'] ) : array();
+            $buylinks = isset( $_POST['wrhr_buy_link'] ) ? (array) wp_unslash( $_POST['wrhr_buy_link'] ) : array();
+
+            $books = array();
+            foreach ( $titles as $i => $t ) {
+                $books[] = array(
+                    'title'    => $t,
+                    'author'   => isset( $authors[ $i ] ) ? $authors[ $i ] : '',
+                    'html_url' => isset( $urls[ $i ] ) ? $urls[ $i ] : '',
+                    'buy_link' => isset( $buylinks[ $i ] ) ? $buylinks[ $i ] : '',
+                );
+            }
+
+            WRHR_Readers::update_reader_books( $id, $books );
+            $notice = __( 'Books updated successfully.', 'wisdomrain-html-reader' );
+
+            $reader = WRHR_Readers::get( $id ); // refresh
+        }
+
+        $template_file = 'admin-reader-edit.php';
+        $template_path = WRHR_PLUGIN_DIR . 'templates/' . $template_file;
+        $template_path = apply_filters( 'wrhr_admin_template_path', $template_path, $template_file );
+
+        if ( file_exists( $template_path ) ) {
+            include $template_path;
+        } else {
+            printf(
+                '<div class="notice notice-error"><p>%s</p></div>',
+                esc_html__( 'Template not found.', 'wisdomrain-html-reader' )
+            );
+        }
     }
 
     /**

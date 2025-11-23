@@ -71,4 +71,31 @@ class WRHR_Readers {
         }
         return false;
     }
+
+    public static function update_reader_books( $id, $books ) {
+        $all = self::get_all();
+        if ( ! isset( $all[ $id ] ) ) {
+            return false;
+        }
+
+        $clean = array();
+
+        foreach ( $books as $b ) {
+            if ( empty( $b['title'] ) && empty( $b['html_url'] ) ) {
+                continue;
+            }
+
+            $clean[] = array(
+                'title'    => sanitize_text_field( $b['title'] ),
+                'author'   => sanitize_text_field( $b['author'] ),
+                'html_url' => esc_url_raw( $b['html_url'] ),
+                'buy_link' => esc_url_raw( $b['buy_link'] ),
+            );
+        }
+
+        $all[ $id ]['books'] = $clean;
+        update_option( self::OPTION_KEY, $all );
+
+        return true;
+    }
 }
