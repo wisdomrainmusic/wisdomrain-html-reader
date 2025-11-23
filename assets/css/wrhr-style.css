@@ -1,11 +1,60 @@
-#wrhr-books-body input {
-    width: 100%;
+.wrhr-reader-wrapper {
+    padding: 20px;
 }
 
-#wrhr-add-book {
-    margin-top: 10px;
-}
-
-.wrap h1 {
+.wrhr-header h2 {
     margin-bottom: 20px;
+    color: #b8860b;
+    font-size: 28px;
+}
+
+.wrhr-book-list {
+    display: grid;
+    gap: 20px;
+}
+
+.wrhr-book-card {
+    border: 1px solid #e4d296;
+    padding: 15px;
+    border-radius: 8px;
+    background: #fffaf0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.wrhr-info h4 {
+    margin: 0 0 6px;
+    font-size: 18px;
+}
+
+.wrhr-author {
+    margin: 0;
+    opacity: .8;
+}
+
+.wrhr-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.wrhr-read-btn {
+    background: #b8860b;
+    color: white;
+    border: 0;
+    padding: 8px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.wrhr-read-btn:hover {
+    background: #916d08;
+}
+
+.wrhr-buy-link {
+    color: #333;
+    border: 1px solid #b8860b;
+    padding: 7px 12px;
+    border-radius: 5px;
+    text-decoration: none;
 }

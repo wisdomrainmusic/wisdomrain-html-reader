@@ -90,6 +90,8 @@ class WRHR_Loader {
      * Initialize admin or public hooks.
      */
     private function init_hooks() {
+        add_action( 'init', array( 'WRHR_Shortcode', 'init' ) );
+
         if ( is_admin() && class_exists( 'WRHR_Admin' ) ) {
             add_action( 'admin_menu', array( 'WRHR_Admin', 'register_menu' ) );
         }
