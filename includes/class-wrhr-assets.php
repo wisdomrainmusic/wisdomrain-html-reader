@@ -42,6 +42,38 @@ class WRHR_Assets {
             true
         );
 
+        /**
+         * WRHR Phase 4.4 — Google Auto-Translate Kill Switch
+         *
+         * Chrome/Edge otomatik sayfa çevirisini durdurur.
+         * Google’ın otomatik algılamasını kapatır.
+         * Dropdown çeviri menüsünün sürekli çalışmasını garanti eder.
+         */
+        add_action( 'wp_head', function() {
+            echo '<meta name="google" content="notranslate">';
+            echo '<style>
+                html:not([data-wrhr-reader]) * {
+                    translate: none !important;
+                }
+                html[translate="no"] {
+                    translate: none !important;
+                }
+            </style>';
+        } );
+
+        // WRHR modal içinde ek güvenlik: Tarayıcının çeviri API tetiklemesini kapat.
+        add_action( 'wp_footer', function() {
+            ?>
+            <script>
+                // Browser auto translation stopper
+                document.documentElement.setAttribute('translate', 'no');
+                if (window.google && window.google.translate) {
+                    try { google.translate.TranslateElement = function(){}; } catch(e){}
+                }
+            </script>
+            <?php
+        } );
+
         if ( ! wp_script_is( 'wp-api-fetch', 'registered' ) ) {
             wp_register_script( 'wp-api-fetch', '/wp-includes/js/dist/api-fetch.min.js', array( 'wp-hooks', 'wp-i18n', 'wp-url' ), false, true );
         }
