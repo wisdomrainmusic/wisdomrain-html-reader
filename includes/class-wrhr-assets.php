@@ -67,6 +67,11 @@ class WRHR_Assets {
 
                 <div class="wrhr-modal-header">
                     <h3 class="wrhr-modal-title" id="wrhr-modal-title"></h3>
+
+                    <!-- MINI NOTICE: Fullscreen Suggested -->
+                    <div class="wrhr-notice-mini">
+                        Full ekran modu önerilir
+                    </div>
                 </div>
 
                 <div class="wrhr-reader-container">

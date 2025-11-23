@@ -386,3 +386,26 @@ body.wrhr-modal-open {
     display: flex;
     flex-direction: column;
 }
+
+/* ===== WRHR Fullscreen Suggestion Badge ===== */
+.wrhr-notice-mini {
+    position: absolute;
+    right: 84px; /* fullscreen butonundan hemen önce */
+    top: 10px;
+
+    background: rgba(255, 247, 226, 0.90); /* soft ivory-gold */
+    color: #b8860b; /* gold text */
+
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid #e8d8a8;
+    border-radius: 6px;
+
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+}
