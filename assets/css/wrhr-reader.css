@@ -31,7 +31,6 @@ body.wrhr-modal-open {
     max-height: 92vh;
     display: flex;
     flex-direction: column;
-    font-family: 'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
 }
 
 #wrhr-modal-content.fullscreen {
@@ -101,17 +100,20 @@ body.wrhr-modal-open {
     height: var(--wrhr-a5-height);
     overflow: hidden;
     page-break-after: always;
-    font-size: 16px;
-    line-height: 1.55;
+    font-size: 18px !important;
+    font-weight: 400 !important;
+    line-height: 1.48 !important;
     padding: 24px 28px;
-    background: #FDFBF4;
+    background: #FAF7EF !important;
     border: 1px solid #e8e2c8;
     border-radius: 8px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 0;
-    color: #000;
+    color: #222 !important;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
 }
 
 .wrhr-page .wrhr-block {
@@ -153,6 +155,18 @@ body.wrhr-modal-open {
     background: transparent !important;
 }
 
+#wrhr-modal * {
+    opacity: 1 !important;
+}
+
+#wrhr-modal h1,
+#wrhr-modal h2,
+#wrhr-modal h3,
+#wrhr-modal h4 {
+    color: #111 !important;
+    opacity: 1 !important;
+}
+
 #wrhr-modal h1 { font-size: 30px; }
 #wrhr-modal h2 { font-size: 26px; }
 #wrhr-modal h3 { font-size: 22px; }
@@ -174,8 +188,9 @@ body.wrhr-modal-open {
     min-width: 72px;
     border: 1px solid #d4c7a1;
     border-radius: 6px;
-    background: #FFF7E2;
-    color: #000;
+    background: #FFF7E2 !important;
+    color: #000 !important;
+    opacity: 1 !important;
     cursor: pointer;
     transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
@@ -200,18 +215,20 @@ body.wrhr-modal-open {
 /* ====== WRHR Phase 8 – Typography Polish ====== */
 
 .wrhr-page {
-    font-family: "Georgia", "Iowan Old Style", "Palatino Linotype", serif !important;
+    background-color: #FAF7EF !important;
+    color: #222 !important;
     font-size: 18px !important;
     font-weight: 400 !important;
-    line-height: 1.45 !important;
-    color: #1c1a18 !important;
+    line-height: 1.48 !important;
     text-rendering: optimizeLegibility !important;
     -webkit-font-smoothing: antialiased !important;
 }
 
 .wrhr-page p {
     margin-bottom: 14px !important;
-    color: #1c1a18 !important;
+    color: #222 !important;
+    font-weight: 400 !important;
+    opacity: 1 !important;
 }
 
 .wrhr-page h1,
