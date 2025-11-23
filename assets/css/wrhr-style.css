@@ -73,3 +73,22 @@
     background: #b8860b;
     color: #fff !important;
 }
+
+/* WRHR Modal — Force Top Layer */
+.wrhr-modal-backdrop {
+    position: fixed !important;
+    z-index: 99998 !important;
+}
+
+.wrhr-modal-frame {
+    position: fixed !important;
+    z-index: 99999 !important;
+    background: #FDFBF4 !important; /* ivory */
+}
+
+.wrhr-modal-content {
+    position: relative !important;
+    z-index: 100000 !important;
+    background: #FDFBF4 !important;
+    color: #000 !important;
+}
