@@ -1,0 +1,104 @@
+/* --- Modal Overlay --- */
+.wrhr-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+}
+
+.wrhr-modal.active {
+    display: flex;
+}
+
+.wrhr-overlay {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+}
+
+.wrhr-modal-content {
+    position: relative;
+    background: #fdfbf5;
+    border-radius: 10px;
+    padding: 0;
+    width: 92%;
+    max-width: 750px;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.wrhr-modal-content.fullscreen {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+}
+
+/* Close + Fullscreen buttons */
+.wrhr-close,
+.wrhr-fs-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #b8860b;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 20;
+}
+
+.wrhr-fs-btn {
+    right: 45px;
+}
+
+:root {
+    --wrhr-a5-height: 744px;
+}
+
+/* --- Page Wrapper (A5 Height) --- */
+.wrhr-reader-container {
+    flex: 1;
+    overflow: hidden;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#wrhr-page-wrapper {
+    height: var(--wrhr-a5-height);
+    overflow: hidden;
+    position: relative;
+}
+
+.wrhr-page {
+    height: var(--wrhr-a5-height);
+    overflow: hidden;
+    page-break-after: always;
+    font-family: Georgia, serif;
+    font-size: 18px;
+    line-height: 1.46;
+    padding: 14px;
+    background: #fffdf5;
+    border: 1px solid #e9d9a1;
+    border-radius: 8px;
+}
+
+/* Controls */
+.wrhr-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+    gap: 15px;
+}
+
+#wrhr-prev,
+#wrhr-next {
+    padding: 8px 14px;
+}
