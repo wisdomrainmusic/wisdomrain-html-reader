@@ -56,6 +56,12 @@ class WRHR_Loader {
     public static function init( $version ) {
         self::autoload();
 
+        $cleaner_path = WRHR_PLUGIN_DIR . 'includes/class-wrhr-cleaner.php';
+
+        if ( file_exists( $cleaner_path ) ) {
+            require_once $cleaner_path;
+        }
+
         if ( null === self::$instance ) {
             self::$instance = new self( $version );
             self::$instance->init_hooks();
