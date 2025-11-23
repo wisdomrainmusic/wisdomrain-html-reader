@@ -311,3 +311,30 @@ body.wrhr-modal-open {
     letter-spacing: 0.06em;
     padding-bottom: 4px;
 }
+
+/* ==============================
+   Book list styling
+   ============================== */
+
+/* BOOK TITLE — GOLD */
+.wrhr-book-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #d4af37; /* Gold */
+    margin: 0 0 4px 0;
+}
+
+/* BOOK AUTHOR — SOFT GREY */
+.wrhr-book-author {
+    font-size: 15px;
+    font-weight: 400;
+    color: #c5c5c5;
+    opacity: 0.9;
+    display: block;
+}
+
+/* Wrapping container for info */
+.wrhr-book-info {
+    display: flex;
+    flex-direction: column;
+}

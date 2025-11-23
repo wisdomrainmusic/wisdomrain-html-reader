@@ -36,9 +36,16 @@ $reader_books = ! empty( $reader['books'] ) && is_array( $reader['books'] ) ? $r
                 ?>
                 <div class="wrhr-book-card">
 
-                    <div class="wrhr-info">
-                        <h4><?php echo esc_html( $title ); ?></h4>
-                        <p class="wrhr-author"><?php echo esc_html( $author ); ?></p>
+                    <div class="wrhr-book-info">
+
+                        <div class="wrhr-book-title">
+                            <?php echo esc_html( $title ); ?>
+                        </div>
+
+                        <div class="wrhr-book-author">
+                            <?php echo esc_html( $author ); ?>
+                        </div>
+
                     </div>
 
                     <div class="wrhr-actions">
