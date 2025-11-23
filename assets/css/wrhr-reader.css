@@ -1,41 +1,29 @@
-/* --- Theme & legacy reset --- */
-#wrhr-modal *,
-#wrhr-modal *::before,
-#wrhr-modal *::after {
-    background: transparent !important;
-    color: #000 !important;
-    box-shadow: none !important;
-}
-
 :root {
     --wrhr-a5-height: 744px;
 }
 
 /* --- Modal Overlay --- */
-.wrhr-modal {
+#wrhr-modal {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.55);
     display: none;
     justify-content: center;
     align-items: center;
-    z-index: 999999;
-    color: #000;
+    background: rgba(0,0,0,0.55);
+    z-index: 99999;
 }
 
-.wrhr-modal.active {
+#wrhr-modal.active {
     display: flex;
 }
 
-.wrhr-overlay {
-    position: absolute;
-    inset: 0;
-    background: transparent;
+body.wrhr-modal-open {
+    overflow: hidden;
 }
 
-.wrhr-modal-content {
+#wrhr-modal-content {
     position: relative;
-    background: #ffffff !important;
+    background: #FDFBF4;
     border-radius: 10px;
     padding: 0;
     width: 92%;
@@ -43,15 +31,10 @@
     max-height: 92vh;
     display: flex;
     flex-direction: column;
-    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
 }
 
-.wrhr-modal-content * {
-    font-family: inherit !important;
-    line-height: 1.5 !important;
-}
-
-.wrhr-modal-content.fullscreen {
+#wrhr-modal-content.fullscreen {
     width: 100% !important;
     height: 100% !important;
     max-width: none !important;
@@ -63,6 +46,7 @@
     padding: 14px 18px 10px;
     text-align: center;
     border-bottom: 1px solid #f0ebde;
+    background: #FDFBF4;
 }
 
 .wrhr-modal-title {
@@ -96,7 +80,7 @@
     border-color: #b8860b;
 }
 
-/* --- Page Wrapper (A6 Height) --- */
+/* --- Page Wrapper (A5 Height) --- */
 .wrhr-reader-container {
     flex: 1;
     overflow: hidden;
@@ -117,23 +101,29 @@
     height: var(--wrhr-a5-height);
     overflow: hidden;
     page-break-after: always;
-    font-size: 18px;
-    line-height: 1.5;
-    padding: 12px 18px 14px;
-    background: #ffffff !important;
+    font-size: 16px;
+    line-height: 1.55;
+    padding: 24px 28px;
+    background: #FDFBF4;
     border: 1px solid #e8e2c8;
     border-radius: 8px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 0;
+    color: #000;
 }
 
 .wrhr-page .wrhr-block {
-    margin: 0 0 12px;
-    padding: 0 !important;
-    border: none !important;
-    box-shadow: none !important;
+    margin: 0 0 14px;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+.wrhr-page .wrhr-block,
+.wrhr-page .wrhr-block * {
     background: transparent !important;
 }
 
@@ -158,8 +148,9 @@
     margin: 0 0 14px;
     color: #1f1c1c;
     font-weight: 700;
-    line-height: 1.2 !important;
+    line-height: 1.2;
     letter-spacing: 0.01em;
+    background: transparent !important;
 }
 
 #wrhr-modal h1 { font-size: 30px; }
@@ -175,7 +166,7 @@
     padding: 12px 16px 16px;
     gap: 14px;
     border-top: 1px solid #f0ebde;
-    background: transparent;
+    background: #FDFBF4;
 }
 
 .wrhr-controls button {
@@ -183,16 +174,17 @@
     min-width: 72px;
     border: 1px solid #d4c7a1;
     border-radius: 6px;
-    background: transparent;
+    background: #FFF7E2;
     color: #000;
     cursor: pointer;
-    transition: border-color 0.15s ease, color 0.15s ease;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
 
 .wrhr-controls button:hover,
 .wrhr-controls button:focus {
     border-color: #b8860b;
     color: #b8860b;
+    background: #F3EBD4;
 }
 
 .wrhr-controls button:active {
@@ -203,75 +195,4 @@
 #wrhr-page-info {
     font-size: 14px;
     color: #4a4230;
-}
-
-/**********************************************
- * WRHR Phase 7.2 – Visual Fix (Ivory Page Skin)
- **********************************************/
-
-/* Modal overlay karanlık kalsın */
-.wrhr-modal-backdrop {
-    background: rgba(0,0,0,0.75) !important;
-}
-
-/* Reader sayfa zemini — Ivory (senin beğendiğin ton) */
-.wrhr-modal-content,
-.wrhr-page {
-    background-color: #FDFBF4 !important; /* Ivory tone */
-    color: #000 !important;
-}
-
-/* Metin içindeki istenmeyen Word background temizliği */
-.wrhr-page .wrhr-block *,
-.wrhr-page .wrhr-block {
-    background: transparent !important;
-}
-
-/* Blok kutularını tamamen temizle */
-.wrhr-page .wrhr-block {
-    box-shadow: none !important;
-    border: none !important;
-    padding: 0 !important;
-    margin: 0 0 16px 0 !important;
-}
-
-/* Tipografi normalize – temiz ve profesyonel */
-.wrhr-page {
-    font-family: "Aptos", "Georgia", serif !important;
-    font-size: 16px !important;
-    line-height: 1.55 !important;
-}
-
-/* H3 başlıkların Word'den gelen çirkin renklerini override et */
-.wrhr-page h1,
-.wrhr-page h2,
-.wrhr-page h3,
-.wrhr-page h4 {
-    color: #222 !important;
-    background: transparent !important;
-    font-weight: 600 !important;
-    margin-top: 22px !important;
-    margin-bottom: 12px !important;
-}
-
-/* Sayfa kenar boşluklarını eşitle */
-.wrhr-page-inner {
-    padding: 28px 32px !important;
-}
-
-/* Pagination görünür, center ve minimal */
-.wrhr-pagination-btn {
-    background: #FFF7E2 !important;
-    color: #000 !important;
-    border: 1px solid #C9B98A !important;
-}
-
-.wrhr-pagination-btn:hover {
-    background: #F3EBD4 !important;
-}
-
-/* Modal frame çizgisi kaldır */
-.wrhr-modal-frame {
-    border: none !important;
-    box-shadow: none !important;
 }
