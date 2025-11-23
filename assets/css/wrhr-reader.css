@@ -1,5 +1,9 @@
 :root {
-    --wrhr-a5-height: 744px;
+    /* A5 ratio responsive height controlled by viewport */
+    --wrhr-a5-height: min(
+        calc((min(900px, 90vw)) * 1.45),
+        calc(100vh - 180px)
+    );
 }
 
 /* ============================================
@@ -181,7 +185,7 @@ body.wrhr-modal-open {
 }
 
 #wrhr-page-wrapper {
-    height: var(--wrhr-a5-height);
+    height: var(--wrhr-a5-height) !important;
     overflow: hidden;
     position: relative;
     display: flex;
@@ -190,7 +194,7 @@ body.wrhr-modal-open {
 }
 
 .wrhr-page {
-    height: var(--wrhr-a5-height);
+    height: var(--wrhr-a5-height) !important;
     overflow: hidden;
     page-break-after: always;
     font-size: 18px !important;
