@@ -39,6 +39,18 @@ class WRHR_Assets {
             WRHR_VERSION,
             true
         );
+
+        if ( ! wp_script_is( 'wp-api-fetch', 'registered' ) ) {
+            wp_register_script( 'wp-api-fetch', '/wp-includes/js/dist/api-fetch.min.js', array( 'wp-hooks', 'wp-i18n', 'wp-url' ), false, true );
+        }
+
+        wp_localize_script(
+            'wrhr-renderer',
+            'wpApiSettings',
+            array(
+                'root' => esc_url_raw( rest_url() ),
+            )
+        );
     }
 
     /** Render the global reader modal markup. */
