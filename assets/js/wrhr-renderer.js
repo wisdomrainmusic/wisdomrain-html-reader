@@ -38,7 +38,7 @@ jQuery(function($){
             const tag  = node.tagName;
 
             if (blockTags.has(tag)) {
-                const text = node.textContent.trim();
+                const text = normalizeText(node.textContent);
                 if (text.length) {
                     blocks.push(node.outerHTML);
                 }
@@ -47,7 +47,7 @@ jQuery(function($){
 
             if (tag === 'DIV') {
                 const hasInnerBlocks = node.querySelector('p, h1, h2, h3, h4, h5, h6, li, td, th');
-                const text = node.textContent.trim();
+                const text = normalizeText(node.textContent);
 
                 if (!hasInnerBlocks && text) {
                     blocks.push(`<p>${text}</p>`);
@@ -56,10 +56,10 @@ jQuery(function($){
         }
 
         if (!blocks.length) {
-            const fallback = container.textContent.trim();
+            const fallback = normalizeText(container.textContent);
             if (fallback) {
                 fallback.split(/\n{2,}/).forEach(part => {
-                    const trimmed = part.trim();
+                    const trimmed = normalizeText(part);
                     if (trimmed.length) {
                         blocks.push(`<p>${trimmed}</p>`);
                     }
@@ -71,7 +71,51 @@ jQuery(function($){
             blocks.push('<p>No readable content found.</p>');
         }
 
-        return blocks;
+        const filteredBlocks = blocks
+            .map(b => b.trim())
+            .filter(b => normalizeText(stripTags(b)).length);
+
+        return splitLargeBlocks(filteredBlocks);
+    }
+
+    function normalizeText(text){
+        return (text || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function stripTags(html){
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+        return temp.textContent || '';
+    }
+
+    function splitLargeBlocks(blocks, wordLimit = 180){
+        const normalized = [];
+
+        blocks.forEach(html => {
+            const temp = document.createElement('div');
+            temp.innerHTML = html;
+            const base = temp.firstElementChild || temp.firstChild;
+            const tagName = base && base.tagName ? base.tagName.toLowerCase() : 'p';
+            const text = normalizeText(temp.textContent || '');
+
+            if (!text.length) {
+                return;
+            }
+
+            const words = text.split(/\s+/);
+
+            if (words.length <= wordLimit) {
+                normalized.push(html);
+                return;
+            }
+
+            for (let i = 0; i < words.length; i += wordLimit) {
+                const part = words.slice(i, i + wordLimit).join(' ');
+                normalized.push(`<${tagName}>${part}</${tagName}>`);
+            }
+        });
+
+        return normalized.length ? normalized : ['<p>No readable content found.</p>'];
     }
 
     function paginateBlocks(blocks){
@@ -113,7 +157,7 @@ jQuery(function($){
                 if (currentPage.scrollHeight > limit){
                     currentPage.removeChild(blockEl);
 
-                    const fragments = splitOversizedBlock(html, limit);
+                    const fragments = splitOversizedBlock(html, limit).filter(fragment => normalizeText(stripTags(fragment)).length);
 
                     if (!fragments.length || (fragments.length === 1 && fragments[0] === html)){
                         const forceBlock = createBlockElement(html);
@@ -149,7 +193,9 @@ jQuery(function($){
     function createBlockElement(html){
         const wrapper = document.createElement('div');
         wrapper.innerHTML = html.trim();
-        return wrapper.firstElementChild || document.createElement('div');
+        const element = wrapper.firstElementChild || document.createElement('div');
+        element.classList.add('wrhr-block');
+        return element;
     }
 
     function createPageElement(){
@@ -230,8 +276,12 @@ jQuery(function($){
     $('.wrhr-read-btn').on('click', async function(){
 
         const url = $(this).data('html');
+        const wrapper = this.closest('.wrhr-reader-wrapper');
+        const title = wrapper && wrapper.dataset ? wrapper.dataset.title : '';
 
         modal.addClass('active');
+        $('body').addClass('wrhr-modal-open');
+        $('#wrhr-modal-title').text(title || '');
 
         $('#wrhr-page-wrapper').html('<div class="wrhr-page">Loading…</div>');
 

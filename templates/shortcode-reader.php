@@ -13,7 +13,7 @@ $reader_id    = isset( $reader['id'] ) ? $reader['id'] : '';
 $reader_name  = ! empty( $reader['name'] ) ? $reader['name'] : '';
 $reader_books = ! empty( $reader['books'] ) && is_array( $reader['books'] ) ? $reader['books'] : array();
 ?>
-<div class="wrhr-reader-wrapper" data-reader-id="<?php echo esc_attr( $reader_id ); ?>">
+<div class="wrhr-reader-wrapper" data-reader-id="<?php echo esc_attr( $reader_id ); ?>" data-title="<?php echo esc_attr( $reader_name ); ?>">
 
     <div class="wrhr-header">
         <h2><?php echo esc_html( $reader_name ); ?></h2>
