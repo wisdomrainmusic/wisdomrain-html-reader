@@ -1,0 +1,17 @@
+/**
+ * Styles for the WisdomRain HTML Reader.
+ */
+
+.wrhr-reader {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+    background: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+}
+
+.wrhr-reader__source {
+    margin-top: 8px;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
