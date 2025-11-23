@@ -204,3 +204,74 @@
     font-size: 14px;
     color: #4a4230;
 }
+
+/**********************************************
+ * WRHR Phase 7.2 – Visual Fix (Ivory Page Skin)
+ **********************************************/
+
+/* Modal overlay karanlık kalsın */
+.wrhr-modal-backdrop {
+    background: rgba(0,0,0,0.75) !important;
+}
+
+/* Reader sayfa zemini — Ivory (senin beğendiğin ton) */
+.wrhr-modal-content,
+.wrhr-page {
+    background-color: #FDFBF4 !important; /* Ivory tone */
+    color: #000 !important;
+}
+
+/* Metin içindeki istenmeyen Word background temizliği */
+.wrhr-page .wrhr-block *,
+.wrhr-page .wrhr-block {
+    background: transparent !important;
+}
+
+/* Blok kutularını tamamen temizle */
+.wrhr-page .wrhr-block {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 0 16px 0 !important;
+}
+
+/* Tipografi normalize – temiz ve profesyonel */
+.wrhr-page {
+    font-family: "Aptos", "Georgia", serif !important;
+    font-size: 16px !important;
+    line-height: 1.55 !important;
+}
+
+/* H3 başlıkların Word'den gelen çirkin renklerini override et */
+.wrhr-page h1,
+.wrhr-page h2,
+.wrhr-page h3,
+.wrhr-page h4 {
+    color: #222 !important;
+    background: transparent !important;
+    font-weight: 600 !important;
+    margin-top: 22px !important;
+    margin-bottom: 12px !important;
+}
+
+/* Sayfa kenar boşluklarını eşitle */
+.wrhr-page-inner {
+    padding: 28px 32px !important;
+}
+
+/* Pagination görünür, center ve minimal */
+.wrhr-pagination-btn {
+    background: #FFF7E2 !important;
+    color: #000 !important;
+    border: 1px solid #C9B98A !important;
+}
+
+.wrhr-pagination-btn:hover {
+    background: #F3EBD4 !important;
+}
+
+/* Modal frame çizgisi kaldır */
+.wrhr-modal-frame {
+    border: none !important;
+    box-shadow: none !important;
+}
