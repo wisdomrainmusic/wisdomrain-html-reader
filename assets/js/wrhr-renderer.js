@@ -543,4 +543,167 @@ jQuery(function($){
         }
     });
 
+    // --------------------------------------------------------------
+    //  GOOGLE TRANSLATE INTEGRATION (PHASE 3)
+    // --------------------------------------------------------------
+
+    /**
+     * Safe way to get Google Translate combo element.
+     */
+    function wrhrGetTranslateCombo() {
+        return document.querySelector('select.goog-te-combo');
+    }
+
+    /**
+     * Set language on Google Translate widget.
+     */
+    window.wrhrSetLanguage = function (langCode) {
+        const combo = wrhrGetTranslateCombo();
+        if (!combo) return;
+
+        combo.value = langCode;
+        combo.dispatchEvent(new Event('change'));
+
+        // Save last used language
+        try {
+            localStorage.setItem('wrhr_last_lang', langCode);
+        } catch (e) {}
+    };
+
+    /**
+     * Force Google Translate to reapply translation after page content changes.
+     */
+    window.wrhrTranslateRefresh = function () {
+        const combo = wrhrGetTranslateCombo();
+        if (!combo) return;
+
+        const lang = combo.value;
+        if (!lang) return;
+
+        // Reset & reapply trick
+        combo.value = '';
+        combo.dispatchEvent(new Event('change'));
+
+        setTimeout(() => {
+            combo.value = lang;
+            combo.dispatchEvent(new Event('change'));
+        }, 120);
+    };
+
+    /**
+     * Restore last language on modal open.
+     */
+    function wrhrRestoreLastLanguage() {
+        try {
+            const lang = localStorage.getItem('wrhr_last_lang');
+            if (!lang) return;
+
+            // Slight delay so modal content is ready
+            setTimeout(() => {
+                wrhrSetLanguage(lang);
+                wrhrTranslateRefresh();
+            }, 300);
+        } catch (e) {}
+    }
+
+    /**
+     * Attach click handlers to flag buttons.
+     */
+    function wrhrBindTranslateMenu() {
+        const menu = document.getElementById('wrhr-lang-switcher');
+        if (!menu) return;
+
+        menu.addEventListener('click', function (e) {
+            const btn = e.target.closest('.wrhr-lang-item');
+            if (!btn) return;
+
+            const lang = btn.getAttribute('data-lang');
+            if (!lang) return;
+
+            wrhrSetLanguage(lang);
+
+            // Immediate refresh for visible content
+            setTimeout(() => {
+                wrhrTranslateRefresh();
+            }, 150);
+        });
+    }
+
+    // --------------------------------------------------------------
+    //  PAGE & LANGUAGE RESTORE ENGINE
+    // --------------------------------------------------------------
+
+    /**
+     * Restore last page based on reader id.
+     */
+    function wrhrRestoreLastPage(readerId) {
+        try {
+            const saved = localStorage.getItem('wrhr_last_page_' + readerId);
+            if (!saved) return;
+
+            const page = parseInt(saved);
+            if (!isNaN(page)) {
+                wrhrGoToPage(page);
+            }
+        } catch (e) {}
+    }
+
+    /**
+     * Save page number on navigation.
+     */
+    document.addEventListener('wrhr_page_changed', function (e) {
+        try {
+            const readerId = window.wrhrCurrentReaderId || null;
+            const page = e.detail && e.detail.page ? e.detail.page : null;
+
+            // Save page
+            if (readerId && page !== null) {
+                localStorage.setItem('wrhr_last_page_' + readerId, page);
+            }
+
+            // Reapply translation
+            wrhrTranslateRefresh();
+        } catch (e) {}
+    });
+
+    // --------------------------------------------------------------
+    //  READ BUTTON OVERRIDE – CAPTURE READER ID
+    // --------------------------------------------------------------
+
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.wrhr-read-btn');
+        if (!btn) return;
+
+        // Find reader wrapper for ID
+        const wrapper = btn.closest('.wrhr-reader-wrapper');
+        const readerId = wrapper ? wrapper.getAttribute('data-reader-id') : null;
+
+        if (readerId) {
+            window.wrhrCurrentReaderId = readerId;
+
+            // Restore saved page after modal opens
+            setTimeout(() => {
+                wrhrRestoreLastPage(readerId);
+            }, 400);
+        }
+    });
+
+    // --------------------------------------------------------------
+    //  INITIALIZE TRANSLATE SYSTEM ON PAGE LOAD + MODAL OPEN
+    // --------------------------------------------------------------
+
+    // Bind menu once
+    wrhrBindTranslateMenu();
+
+    // Whenever modal opens, restore language
+    document.addEventListener('wrhr_modal_opened', function () {
+        wrhrRestoreLastLanguage();
+    });
+
+    // Final safety refresh after resize events
+    window.addEventListener('resize', function () {
+        setTimeout(() => {
+            wrhrTranslateRefresh();
+        }, 200);
+    });
 });
