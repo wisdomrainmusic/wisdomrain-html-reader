@@ -70,7 +70,7 @@ class WRHR_Assets {
 
                     <!-- MINI NOTICE: Fullscreen Suggested -->
                     <div class="wrhr-notice-mini">
-                        Full ekran modu önerilir
+                        Full screen mode recommended
                     </div>
                 </div>
 
