@@ -285,7 +285,11 @@ jQuery(function($){
 
         modal.addClass('active');
         $('body').addClass('wrhr-modal-open');
-        $('#wrhr-modal-title').text(title || '');
+        if (title && title.length > 0) {
+            $('#wrhr-modal-title').text(title);
+        } else {
+            $('#wrhr-modal-title').text('Untitled');
+        }
 
         $('#wrhr-page-wrapper').html('<div class="wrhr-page">Loading…</div>');
 

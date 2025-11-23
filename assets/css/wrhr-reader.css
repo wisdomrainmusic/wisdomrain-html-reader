@@ -196,3 +196,45 @@ body.wrhr-modal-open {
     font-size: 14px;
     color: #4a4230;
 }
+
+/* ====== WRHR Phase 8 – Typography Polish ====== */
+
+.wrhr-page {
+    font-family: "Georgia", "Iowan Old Style", "Palatino Linotype", serif !important;
+    font-size: 18px !important;
+    font-weight: 400 !important;
+    line-height: 1.45 !important;
+    color: #1c1a18 !important;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+}
+
+.wrhr-page p {
+    margin-bottom: 14px !important;
+    color: #1c1a18 !important;
+}
+
+.wrhr-page h1,
+.wrhr-page h2,
+.wrhr-page h3,
+.wrhr-page h4 {
+    font-family: "Georgia", serif !important;
+    color: #111 !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.01em !important;
+    margin-top: 24px !important;
+    margin-bottom: 14px !important;
+    background: transparent !important;
+}
+
+#wrhr-modal h3 { font-size: 22px !important; }
+#wrhr-modal h4 { font-size: 20px !important; }
+
+.wrhr-modal-title {
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    color: #3a3324 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-bottom: 4px;
+}
