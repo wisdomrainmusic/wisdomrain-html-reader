@@ -7,6 +7,58 @@
 }
 
 /* ============================================
+   WRHR Phase 3.2 — Flag Visibility Fix
+   Force icons to always show and override
+   any theme/Google styling.
+   ============================================ */
+
+.wrhr-lang-switcher {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+    z-index: 999999 !important;
+}
+
+.wrhr-lang-item img {
+    width: 26px !important;
+    height: 26px !important;
+    display: block !important;
+    opacity: 1 !important;
+    filter: none !important;
+    mix-blend-mode: normal !important;
+    border-radius: 4px !important;
+    z-index: 999999 !important;
+}
+
+.wrhr-lang-item {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    z-index: 999999 !important;
+}
+
+/* Hide Google blue top bar */
+.goog-te-banner-frame {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+body {
+    top: 0 !important;
+}
+
+/* Hide google gadget internal icons */
+.goog-te-gadget-icon,
+#google_translate_element,
+.goog-te-menu-value span {
+    display: none !important;
+}
+
+/* ============================================
    WRHR Phase 8.1 — FINAL FIX
    Theme is forcing opacity:0.22, blend-mode
    and brightness filters onto all WRHR text.

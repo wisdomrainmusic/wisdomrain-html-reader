@@ -12,6 +12,20 @@ jQuery(function($){
     const WRHR_LAST_LANG_KEY = WRHR_STORAGE_KEYS.last_lang || 'wrhr_last_lang';
     const WRHR_LAST_PAGE_PREFIX = WRHR_STORAGE_KEYS.last_page_prefix || 'wrhr_last_page_';
 
+    function wrhrProtectFlagImages() {
+        const imgs = document.querySelectorAll('.wrhr-lang-item img');
+        imgs.forEach((img) => {
+            img.setAttribute('translate', 'no');
+            img.classList.add('notranslate');
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', wrhrProtectFlagImages);
+    } else {
+        wrhrProtectFlagImages();
+    }
+
     const wrhrTranslate = {
         languages: wrhrLangConfig.languages || [],
         selectors: wrhrLangConfig.google_selectors || {},
