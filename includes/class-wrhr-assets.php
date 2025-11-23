@@ -69,48 +69,65 @@ class WRHR_Assets {
                 ),
             )
         );
+
+        // Prepare translate widget config for JS (Phase 3 will consume this).
+        if ( class_exists( 'WRHR_Languages' ) ) {
+            wp_localize_script(
+                'wrhr-renderer',
+                'wrhrTranslateConfig',
+                array(
+                    'languages'   => WRHR_Languages::get_js_config(),
+                    'flagsBase'   => trailingslashit( WRHR_URL . 'assets/flags' ),
+                    'defaultLang' => 'en',
+                )
+            );
+        }
     }
 
     /** Render the global reader modal markup. */
     public static function render_modal() {
-        $flags_base_url = WRHR_Languages::get_flags_base_url();
         ?>
         <div id="wrhr-modal" class="wrhr-modal" aria-hidden="true">
 
             <div class="wrhr-overlay" id="wrhr-modal-overlay"></div>
 
             <div class="wrhr-modal-content" id="wrhr-modal-content">
-
-                <button class="wrhr-close" id="wrhr-close">×</button>
-                <button class="wrhr-fs-btn" id="wrhr-fs-btn">⤢</button>
-
+                <?php // Header includes title, fullscreen notice and language switcher. ?>
                 <div class="wrhr-modal-header">
-                    <div class="wrhr-modal-header-main">
+                    <div class="wrhr-modal-title-wrapper">
                         <h3 class="wrhr-modal-title" id="wrhr-modal-title"></h3>
 
-                        <!-- MINI NOTICE: Fullscreen Suggested -->
                         <div class="wrhr-notice-mini">
                             Full screen mode recommended
                         </div>
                     </div>
 
-                    <div class="wrhr-lang-switcher notranslate" id="wrhr-lang-switcher" aria-label="Translate language chooser">
-                        <?php foreach ( WRHR_Languages::all() as $lang ) :
-                            $flag = $flags_base_url . $lang['flag'];
-                            ?>
-                            <button
-                                type="button"
-                                class="wrhr-lang-btn notranslate"
-                                data-lang="<?php echo esc_attr( $lang['code'] ); ?>"
-                                data-google="<?php echo esc_attr( $lang['google_code'] ); ?>"
-                                aria-label="<?php echo esc_attr( $lang['label'] ); ?>">
-                                <img
-                                    src="<?php echo esc_url( $flag ); ?>"
-                                    alt="<?php echo esc_attr( $lang['label'] ); ?>"
-                                    class="notranslate" />
-                            </button>
-                        <?php endforeach; ?>
+                    <div class="wrhr-modal-controls">
+                        <button class="wrhr-fs-btn" id="wrhr-fs-btn">⤢</button>
+                        <button class="wrhr-close" id="wrhr-close">×</button>
                     </div>
+
+                    <?php
+                    /**
+                     * Language switcher (flag-only) for Google Translate.
+                     * Only icons are printed; labels are provided via alt + aria-label.
+                     * Wrapped with .notranslate so Google does not touch this UI.
+                     */
+                    if ( class_exists( 'WRHR_Languages' ) ) :
+                        $languages = WRHR_Languages::get_languages();
+                        ?>
+                        <div class="wrhr-lang-switcher notranslate" id="wrhr-lang-switcher" aria-label="Language selector">
+                            <?php foreach ( $languages as $lang ) : ?>
+                                <button
+                                    type="button"
+                                    class="wrhr-lang-item"
+                                    data-lang="<?php echo esc_attr( $lang['code'] ); ?>"
+                                    aria-label="<?php echo esc_attr( $lang['label'] ); ?>">
+                                    <img src="<?php echo esc_url( WRHR_URL . 'assets/flags/' . $lang['flag_file'] ); ?>" alt="<?php echo esc_attr( $lang['label'] ); ?>" />
+                                </button>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="wrhr-reader-container">
