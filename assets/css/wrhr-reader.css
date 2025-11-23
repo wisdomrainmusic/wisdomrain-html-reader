@@ -6,6 +6,66 @@
     );
 }
 
+/* Modern dropdown language menu */
+.wrhr-lang-dropdown {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 999999 !important;
+}
+
+.wrhr-lang-toggle {
+    background: #eee !important;
+    border: 1px solid #ccc !important;
+    padding: 4px 10px !important;
+    border-radius: 4px !important;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    color: #333 !important;
+    transition: background 0.2s ease;
+}
+
+.wrhr-lang-toggle:hover {
+    background: #e1e1e1 !important;
+}
+
+.wrhr-lang-menu {
+    position: absolute;
+    top: 28px;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 160px;
+    z-index: 999999 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    overflow: hidden;
+}
+
+.wrhr-lang-option {
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #333;
+}
+
+.wrhr-lang-option:hover {
+    background: #f2f2f2;
+}
+
+.notranslate {
+    translate: no !important;
+}
+
+/* Prevent translation/user selection on the dropdown */
+#wrhr-lang-dropdown,
+#wrhr-lang-dropdown * {
+    translate: no !important;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 /* ============================================
    WRHR Phase 3.2 — Flag Visibility Fix
    Force icons to always show and override

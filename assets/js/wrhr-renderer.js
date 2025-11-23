@@ -720,4 +720,49 @@ jQuery(function($){
             wrhrTranslateRefresh();
         }, 200);
     });
+
+    /* Modern Language Dropdown */
+    const dd = document.getElementById("wrhr-lang-dropdown");
+    if (dd) {
+        const toggle = dd.querySelector(".wrhr-lang-toggle");
+        const menu = dd.querySelector(".wrhr-lang-menu");
+
+        toggle.addEventListener("click", () => {
+            menu.style.display = menu.style.display === "block" ? "none" : "block";
+        });
+
+        // Hide when clicking outside
+        document.addEventListener("click", (e) => {
+            if (!dd.contains(e.target)) {
+                menu.style.display = "none";
+            }
+        });
+
+        // Select language
+        menu.querySelectorAll(".wrhr-lang-option").forEach(option => {
+            option.addEventListener("click", () => {
+                const lang = option.getAttribute("data-lang");
+
+                // Apply translate language
+                wrhrSetLanguage(lang);
+                wrhrTranslateRefresh();
+
+                // Save user preference
+                localStorage.setItem(WRHR_LAST_LANG_KEY, lang);
+
+                // Update button text
+                toggle.textContent = option.textContent + " ▼";
+
+                // Close menu
+                menu.style.display = "none";
+            });
+        });
+
+        /* Restore last language */
+        const saved = localStorage.getItem(WRHR_LAST_LANG_KEY);
+        if (saved) {
+            const match = menu.querySelector(`[data-lang="${saved}"]`);
+            if (match) toggle.textContent = match.textContent + " ▼";
+        }
+    }
 });

@@ -136,6 +136,27 @@ class WRHR_Assets {
                         </div>
                     </div>
 
+                    <div class="wrhr-lang-dropdown notranslate" id="wrhr-lang-dropdown">
+                        <button type="button" class="wrhr-lang-toggle notranslate">Language ▼</button>
+                        <div class="wrhr-lang-menu notranslate" style="display:none;">
+                            <div class="wrhr-lang-option" data-lang="en">English</div>
+                            <div class="wrhr-lang-option" data-lang="de">German</div>
+                            <div class="wrhr-lang-option" data-lang="fr">French</div>
+                            <div class="wrhr-lang-option" data-lang="it">Italian</div>
+                            <div class="wrhr-lang-option" data-lang="pt">Portuguese</div>
+                            <div class="wrhr-lang-option" data-lang="tr">Turkish</div>
+                            <div class="wrhr-lang-option" data-lang="ru">Russian</div>
+                            <div class="wrhr-lang-option" data-lang="es">Spanish</div>
+                            <div class="wrhr-lang-option" data-lang="hi">Hindi</div>
+                            <div class="wrhr-lang-option" data-lang="ja">Japanese</div>
+                            <div class="wrhr-lang-option" data-lang="zh-CN">Chinese (Simplified)</div>
+                            <div class="wrhr-lang-option" data-lang="no">Norwegian</div>
+                            <div class="wrhr-lang-option" data-lang="ar">Arabic</div>
+                            <div class="wrhr-lang-option" data-lang="nl">Dutch</div>
+                            <div class="wrhr-lang-option" data-lang="pl">Polish</div>
+                        </div>
+                    </div>
+
                     <div class="wrhr-modal-controls">
                         <button class="wrhr-fs-btn" id="wrhr-fs-btn">⤢</button>
                         <button class="wrhr-close" id="wrhr-close">×</button>
