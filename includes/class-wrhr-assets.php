@@ -25,6 +25,13 @@ class WRHR_Assets {
             WRHR_VERSION
         );
 
+        wp_enqueue_style(
+            'wrhr-reader-css',
+            WRHR_URL . 'assets/css/wrhr-reader.css',
+            array(),
+            '1.0.0'
+        );
+
         wp_enqueue_script(
             'wrhr-renderer',
             $base_url . 'assets/js/wrhr-renderer.js',
@@ -33,4 +40,33 @@ class WRHR_Assets {
             true
         );
     }
+
+    /** Render the global reader modal markup. */
+    public static function render_modal() {
+        ?>
+        <div id="wrhr-modal" class="wrhr-modal" aria-hidden="true">
+
+            <div class="wrhr-overlay" id="wrhr-modal-overlay"></div>
+
+            <div class="wrhr-modal-content" id="wrhr-modal-content">
+
+                <button class="wrhr-close" id="wrhr-close">×</button>
+                <button class="wrhr-fs-btn" id="wrhr-fs-btn">⤢</button>
+
+                <div class="wrhr-reader-container">
+                    <div id="wrhr-page-wrapper"></div>
+                </div>
+
+                <div class="wrhr-controls">
+                    <button id="wrhr-prev">⟨⟨</button>
+                    <span id="wrhr-page-info">Page 1 / 1</span>
+                    <button id="wrhr-next">⟩⟩</button>
+                </div>
+
+            </div>
+        </div>
+        <?php
+    }
 }
+
+add_action( 'wp_footer', array( 'WRHR_Assets', 'render_modal' ) );

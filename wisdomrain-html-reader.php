@@ -19,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'WRHR_VERSION', '0.1.0' );
 define( 'WRHR_PLUGIN_FILE', __FILE__ );
 define( 'WRHR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'WRHR_URL', plugin_dir_url( __FILE__ ) );
 define( 'WRHR_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
 require_once WRHR_PLUGIN_DIR . 'includes/class-wrhr-loader.php';
