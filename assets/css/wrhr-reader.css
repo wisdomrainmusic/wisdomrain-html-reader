@@ -8,45 +8,49 @@
 
 /* Modern dropdown language menu */
 .wrhr-lang-dropdown {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    position: absolute !important;
+    top: 10px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     z-index: 999999 !important;
 }
 
 .wrhr-lang-toggle {
-    background: #eee !important;
-    border: 1px solid #ccc !important;
-    padding: 4px 10px !important;
-    border-radius: 4px !important;
+    background: #f6f5f2;
+    border: 1px solid #d4d2c9;
+    padding: 5px 14px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 13px;
+    color: #333;
     font-weight: 600;
-    color: #333 !important;
-    transition: background 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.15s ease;
 }
 
 .wrhr-lang-toggle:hover {
-    background: #e1e1e1 !important;
+    background: #ebe9e3;
 }
 
 .wrhr-lang-menu {
     position: absolute;
-    top: 28px;
-    right: 0;
+    top: 36px !important; /* proper drop gap */
+    right: auto !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     background: #fff;
     border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 160px;
+    border-radius: 8px;
+    width: 200px;
     z-index: 999999 !important;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     overflow: hidden;
 }
 
 .wrhr-lang-option {
-    padding: 6px 10px;
+    padding: 7px 14px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 14px;
     color: #333;
 }
 
