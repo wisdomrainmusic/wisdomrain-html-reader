@@ -42,6 +42,20 @@ class WRHR_Assets {
             true
         );
 
+        // ----------------------------------------------------
+        // Google Translate Loader (critical)
+        // ----------------------------------------------------
+        wp_enqueue_script(
+            'wrhr-google-translate',
+            'https://translate.google.com/translate_a/element.js?cb=wrhrGoogleTranslateInit',
+            array(),
+            null,
+            true
+        );
+
+        // A hidden container will hold Google's internal combo
+        add_action( 'wp_footer', array( __CLASS__, 'render_google_translate_container' ) );
+
         if ( ! wp_script_is( 'wp-api-fetch', 'registered' ) ) {
             wp_register_script( 'wp-api-fetch', '/wp-includes/js/dist/api-fetch.min.js', array( 'wp-hooks', 'wp-i18n', 'wp-url' ), false, true );
         }
@@ -82,6 +96,26 @@ class WRHR_Assets {
                 )
             );
         }
+    }
+
+    /**
+     * Hidden container + JS callback for Google Translate engine.
+     */
+    public static function render_google_translate_container() {
+        ?>
+        <div id="wrhr-google-container" class="notranslate" style="display:none;"></div>
+
+        <script>
+        function wrhrGoogleTranslateInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,de,fr,it,pt,tr,ru,es,hi,ja,zh-CN,no,ar,nl,pl',
+                autoDisplay: false,
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'wrhr-google-container');
+        }
+        </script>
+        <?php
     }
 
     /** Render the global reader modal markup. */
