@@ -82,6 +82,37 @@ body.wrhr-modal-open {
     flex-direction: column;
 }
 
+/* MODAL INNER — A5/A6 Auto Resize + Scroll Safe */
+.wrhr-reader-modal-inner {
+    position: relative;
+    background: #fdfbf3; /* mevcut görünüm bozulmaması için dokunmuyoruz */
+    border-radius: 12px;
+    padding: 32px;
+
+    /* A5/A6 ratio (yaklaşık 1:1.45) */
+    aspect-ratio: 1 / 1.45;
+
+    /* Ekrana göre otomatik ölçekleme */
+    max-height: calc(100vh - 80px);
+    max-width: min(900px, 90vw);
+
+    width: 100%;
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+
+    /* İçerik dışarı taşarsa scroll */
+    overflow: hidden;
+}
+
+/* İçerik alanı scrollable */
+.wrhr-reader-page-container {
+    flex: 1 1 auto;
+    overflow-y: auto !important;
+    padding: 24px;
+}
+
 #wrhr-modal-content.fullscreen {
     width: 100% !important;
     height: 100% !important;
