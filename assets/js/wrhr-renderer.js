@@ -120,7 +120,8 @@ jQuery(function($){
 
     function paginateBlocks(blocks){
         const pages = [];
-        const limit = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--wrhr-a5-height'));
+        const cssLimit = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--wrhr-a5-height'));
+        const limit = Number.isFinite(cssLimit) && cssLimit > 0 ? cssLimit : 744;
 
         const measuringWrapper = document.createElement('div');
         measuringWrapper.style.position = 'absolute';
@@ -264,6 +265,9 @@ jQuery(function($){
             window.innerHeight * 0.90,
             (window.innerWidth * 1.414)
         );
+        if (!isFinite(h) || h <= 0) {
+            h = 744;
+        }
         document.documentElement.style.setProperty('--wrhr-a5-height', h + 'px');
     }
 
@@ -286,8 +290,13 @@ jQuery(function($){
         $('#wrhr-page-wrapper').html('<div class="wrhr-page">Loading…</div>');
 
         let cleanHTML = await loadHTML(url);
-        WRHR_BLOCKS = htmlToBlocks(cleanHTML);
+        WRHR_BLOCKS = htmlToBlocks(cleanHTML || '');
         WRHR_PAGES = paginateBlocks(WRHR_BLOCKS);
+
+        if (!WRHR_PAGES.length) {
+            WRHR_PAGES = ['<div class="wrhr-page"><p>No readable content found.</p></div>'];
+        }
+
         renderPage(0);
 
     });
