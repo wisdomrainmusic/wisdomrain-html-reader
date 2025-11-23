@@ -34,6 +34,15 @@
     color: #111 !important;
 }
 
+/* Phase 8.2 – Make H1/H2 absolutely crisp */
+#wrhr-modal h1,
+#wrhr-modal h2 {
+    color: #000000 !important;
+    font-weight: 800 !important;
+    text-shadow: 0 0 0 #000 !important;
+    opacity: 1 !important;
+}
+
 /* Strengthen paragraph visibility */
 #wrhr-modal p,
 #wrhr-modal span,
