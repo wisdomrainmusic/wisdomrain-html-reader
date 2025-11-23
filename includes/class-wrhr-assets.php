@@ -162,27 +162,6 @@ class WRHR_Assets {
                         <button class="wrhr-close" id="wrhr-close">×</button>
                     </div>
 
-                    <?php
-                    /**
-                     * Language switcher (flag-only) for Google Translate.
-                     * Only icons are printed; labels are provided via alt + aria-label.
-                     * Wrapped with .notranslate so Google does not touch this UI.
-                     */
-                    if ( class_exists( 'WRHR_Languages' ) ) :
-                        $languages = WRHR_Languages::get_languages();
-                        ?>
-                        <div class="wrhr-lang-switcher notranslate" id="wrhr-lang-switcher" aria-label="Language selector">
-                            <?php foreach ( $languages as $lang ) : ?>
-                                <button
-                                    type="button"
-                                    class="wrhr-lang-item"
-                                    data-lang="<?php echo esc_attr( $lang['code'] ); ?>"
-                                    aria-label="<?php echo esc_attr( $lang['label'] ); ?>">
-                                    <img src="<?php echo esc_url( WRHR_URL . 'assets/flags/' . $lang['flag_file'] ); ?>" alt="<?php echo esc_attr( $lang['label'] ); ?>" />
-                                </button>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
                 </div>
 
                 <div class="wrhr-reader-container">

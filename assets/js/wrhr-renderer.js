@@ -12,46 +12,14 @@ jQuery(function($){
     const WRHR_LAST_LANG_KEY = WRHR_STORAGE_KEYS.last_lang || 'wrhr_last_lang';
     const WRHR_LAST_PAGE_PREFIX = WRHR_STORAGE_KEYS.last_page_prefix || 'wrhr_last_page_';
 
-    function wrhrProtectFlagImages() {
-        const imgs = document.querySelectorAll('.wrhr-lang-item img');
-        imgs.forEach((img) => {
-            img.setAttribute('translate', 'no');
-            img.classList.add('notranslate');
-        });
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', wrhrProtectFlagImages);
-    } else {
-        wrhrProtectFlagImages();
-    }
-
     const wrhrTranslate = {
         languages: wrhrLangConfig.languages || [],
         selectors: wrhrLangConfig.google_selectors || {},
         currentLanguage: null,
-        container: null,
         combo: null,
 
         init() {
-            this.container = $('#wrhr-lang-switcher');
-            this.bindUI();
             this.restoreLastLanguage();
-        },
-
-        bindUI() {
-            if (!this.container || !this.container.length) {
-                return;
-            }
-
-            this.container.on('click', '.wrhr-lang-btn', (event) => {
-                const btn = event.currentTarget;
-                const code = btn.dataset ? btn.dataset.lang : null;
-                if (!code) {
-                    return;
-                }
-                this.setLanguage(code, { persist: true });
-            });
         },
 
         highlightActive(code) {
@@ -620,29 +588,6 @@ jQuery(function($){
         } catch (e) {}
     }
 
-    /**
-     * Attach click handlers to flag buttons.
-     */
-    function wrhrBindTranslateMenu() {
-        const menu = document.getElementById('wrhr-lang-switcher');
-        if (!menu) return;
-
-        menu.addEventListener('click', function (e) {
-            const btn = e.target.closest('.wrhr-lang-item');
-            if (!btn) return;
-
-            const lang = btn.getAttribute('data-lang');
-            if (!lang) return;
-
-            wrhrSetLanguage(lang);
-
-            // Immediate refresh for visible content
-            setTimeout(() => {
-                wrhrTranslateRefresh();
-            }, 150);
-        });
-    }
-
     // --------------------------------------------------------------
     //  PAGE & LANGUAGE RESTORE ENGINE
     // --------------------------------------------------------------
@@ -705,9 +650,6 @@ jQuery(function($){
     // --------------------------------------------------------------
     //  INITIALIZE TRANSLATE SYSTEM ON PAGE LOAD + MODAL OPEN
     // --------------------------------------------------------------
-
-    // Bind menu once
-    wrhrBindTranslateMenu();
 
     // Whenever modal opens, restore language
     document.addEventListener('wrhr_modal_opened', function () {
