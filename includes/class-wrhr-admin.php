@@ -49,6 +49,15 @@ class WRHR_Admin {
         );
 
         add_submenu_page(
+            null,
+            __( 'Edit Books', 'wisdomrain-html-reader' ),
+            __( 'Edit Books', 'wisdomrain-html-reader' ),
+            self::CAPABILITY,
+            'wrhr-reader-edit',
+            array( self::class, 'render_reader_edit_page' )
+        );
+
+        add_submenu_page(
             self::MENU_SLUG,
             __( 'Settings', 'wisdomrain-html-reader' ),
             __( 'Settings', 'wisdomrain-html-reader' ),
@@ -71,7 +80,74 @@ class WRHR_Admin {
      */
     public static function render_manage_readers_page() {
         self::ensure_capability();
-        self::render_template( 'admin-manage-readers.php' );
+
+        $notices = array();
+
+        if ( ! empty( $_POST['wrhr_create_reader'] ) ) {
+            check_admin_referer( 'wrhr_create_reader' );
+
+            $name = isset( $_POST['wrhr_reader_name'] ) ? sanitize_text_field( wp_unslash( $_POST['wrhr_reader_name'] ) ) : '';
+            $slug = isset( $_POST['wrhr_reader_slug'] ) ? sanitize_text_field( wp_unslash( $_POST['wrhr_reader_slug'] ) ) : '';
+
+            if ( $name ) {
+                WRHR_Readers::create( $name, $slug );
+                $notices[] = array(
+                    'type'    => 'success',
+                    'message' => __( 'Reader created successfully.', 'wisdomrain-html-reader' ),
+                );
+            } else {
+                $notices[] = array(
+                    'type'    => 'error',
+                    'message' => __( 'Reader name is required.', 'wisdomrain-html-reader' ),
+                );
+            }
+        }
+
+        if ( ! empty( $_GET['delete'] ) ) {
+            $delete_id = sanitize_text_field( wp_unslash( $_GET['delete'] ) );
+            $nonce     = isset( $_GET['_wpnonce'] ) ? wp_unslash( $_GET['_wpnonce'] ) : '';
+
+            if ( wp_verify_nonce( $nonce, 'wrhr_delete_reader_' . $delete_id ) ) {
+                if ( WRHR_Readers::delete( $delete_id ) ) {
+                    $notices[] = array(
+                        'type'    => 'success',
+                        'message' => __( 'Reader deleted.', 'wisdomrain-html-reader' ),
+                    );
+                } else {
+                    $notices[] = array(
+                        'type'    => 'error',
+                        'message' => __( 'Reader not found.', 'wisdomrain-html-reader' ),
+                    );
+                }
+            } else {
+                $notices[] = array(
+                    'type'    => 'error',
+                    'message' => __( 'Security check failed. Please try again.', 'wisdomrain-html-reader' ),
+                );
+            }
+        }
+
+        $readers       = WRHR_Readers::get_all();
+        $template_file = 'admin-readers-list.php';
+        $template_path = WRHR_PLUGIN_DIR . 'templates/' . $template_file;
+        $template_path = apply_filters( 'wrhr_admin_template_path', $template_path, $template_file );
+
+        if ( file_exists( $template_path ) ) {
+            include $template_path;
+        } else {
+            printf(
+                '<div class="notice notice-error"><p>%s</p></div>',
+                esc_html__( 'Template not found.', 'wisdomrain-html-reader' )
+            );
+        }
+    }
+
+    /**
+     * Render reader edit page placeholder.
+     */
+    public static function render_reader_edit_page() {
+        self::ensure_capability();
+        self::render_template( 'admin-reader-edit.php' );
     }
 
     /**
