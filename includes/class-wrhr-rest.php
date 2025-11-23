@@ -24,39 +24,18 @@ class WRHR_REST {
 
     public static function clean_html( WP_REST_Request $req ) {
         $html = $req->get_param( 'html' );
-        if ( ! $html ) {
-            return [ 'error' => 'empty html' ];
+
+        if ( ! is_string( $html ) || '' === trim( $html ) ) {
+            return [ 'clean' => '' ];
         }
 
-        // Remove Word garbage (Mso classes, Word inline styles).
-        $html = preg_replace( '/class="Mso.*?"/i', '', $html );
-        $html = preg_replace( '/mso-[^:]+:[^;"]+;?/i', '', $html );
-        $html = preg_replace( '/<span[^>]*?>/i', '', $html );
-        $html = preg_replace( '/<\/span>/i', '', $html );
+        if ( class_exists( 'WRHR_Cleaner' ) ) {
+            $clean = WRHR_Cleaner::clean_html( $html );
+        } else {
+            // Fallback: minimal sanitize, ama normalde buraya hiç düşmemeli.
+            $clean = wp_kses_post( $html );
+        }
 
-        // Remove inline background or color styles coming from Word export.
-        // Examples: background:black; color:#000000; background-color:windowtext;
-        $html = preg_replace( '/background[^:]*:[^;\"]+;?/i', '', $html );
-        $html = preg_replace( '/background-color[^:]*:[^;\"]+;?/i', '', $html );
-        $html = preg_replace( '/color:[^;\"]+;?/i', '', $html );
-
-        // Allow only safe tags.
-        $allowed = [
-            'p'      => [],
-            'h2'     => [],
-            'h3'     => [],
-            'h4'     => [],
-            'ul'     => [],
-            'ol'     => [],
-            'li'     => [],
-            'strong' => [],
-            'em'     => [],
-            'b'      => [],
-            'i'      => [],
-        ];
-
-        $html = wp_kses( $html, $allowed );
-
-        return [ 'clean' => $html ];
+        return [ 'clean' => $clean ];
     }
 }
