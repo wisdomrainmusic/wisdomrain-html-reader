@@ -52,3 +52,42 @@
     opacity: 1 !important;
     pointer-events: auto !important;
 }
+/* WRHR — Gold text for dropdown */
+#wrhr-lang-select,
+#wrhr-lang-select option,
+.goog-te-menu2-item div,
+.goog-te-menu2-item span,
+.goog-te-menu-value span {
+    color: #E6C773 !important;
+}
+
+/* Dropdown background */
+.goog-te-menu2-item,
+.goog-te-menu2-item div {
+    background: #000000f5 !important;
+}
+
+/* Highlighted language */
+.goog-te-menu2-item-selected div {
+    background: #1a1a1a !important;
+    color: #E6C773 !important;
+}
+
+/* Remove Google branding */
+.goog-logo-link,
+.goog-te-gadget span,
+.goog-te-gadget-simple span {
+    display: none !important;
+}
+
+/* Remove top banner via CSS */
+.goog-te-banner-frame {
+    display: none !important;
+}
+#goog-gt-tt,
+.goog-te-balloon-frame {
+    display: none !important;
+}
+body {
+    top: 0 !important;
+}

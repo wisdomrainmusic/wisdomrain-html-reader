@@ -42,6 +42,14 @@ class WRHR_Assets {
         );
 
         wp_enqueue_script(
+            'wrhr-frontend',
+            $base_url . 'assets/js/wrhr-frontend.js',
+            array(),
+            WRHR_VERSION,
+            true
+        );
+
+        wp_enqueue_script(
             'wrhr-renderer',
             $base_url . 'assets/js/wrhr-renderer.js',
             array( 'jquery' ),
