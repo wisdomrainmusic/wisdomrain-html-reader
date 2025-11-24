@@ -54,44 +54,81 @@ setInterval(() => {
    WRHR CUSTOM TRANSLATE MENU – ENGINE
    ============================================ */
 
-function wrhrApplyLanguage(lang) {
-    const combo = document.querySelector('.goog-te-combo');
-    if (combo) {
+function wrhrApplyLanguage(lang, delay = 0) {
+    const apply = () => {
+        const combo = document.querySelector('.goog-te-combo');
+        if (!combo) return;
+
+        if (!lang || lang === 'en') {
+            combo.value = '';
+            combo.dispatchEvent(new Event('change'));
+
+            // cache kırmak için ikinci tetikleme
+            setTimeout(() => {
+                combo.value = '';
+                combo.dispatchEvent(new Event('change'));
+            }, 100);
+            return;
+        }
+
         combo.value = lang;
-        combo.dispatchEvent(new Event("change"));
+        combo.dispatchEvent(new Event('change'));
+    };
+
+    if (delay > 0) {
+        setTimeout(apply, delay);
+    } else {
+        apply();
     }
 }
 
 (function() {
-    const select = document.getElementById('wrhr-lang');
+    const select = document.getElementById('wrhr-custom-lang');
+    if (!select) return;
 
-    // LocalStorage Load
-    const saved = localStorage.getItem('wrhr_lang');
-    if (saved) {
-        select.value = saved;
-        if (saved !== 'en') {
-            setTimeout(() => wrhrApplyLanguage(saved), 300);
-        }
+    const STORAGE_KEY = 'wrhr_lang';
+    const saved = localStorage.getItem(STORAGE_KEY) || 'en';
+
+    select.value = saved;
+    if (saved !== 'en') {
+        wrhrApplyLanguage(saved, 300);
     }
 
-    // On Change
     select.addEventListener('change', function() {
-        localStorage.setItem('wrhr_lang', this.value);
+        const lang = this.value;
+        const combo = document.querySelector('.goog-te-combo');
 
-        if (this.value === 'en') {
-            // original language
-            wrhrApplyLanguage('');
-        } else {
-            wrhrApplyLanguage(this.value);
+        if (lang === 'en') {
+            if (combo) {
+                wrhrApplyLanguage('en');
+            }
+            this.value = 'en';
+            localStorage.setItem(STORAGE_KEY, 'en');
+            return;
         }
+
+        if (combo) {
+            wrhrApplyLanguage(lang);
+        }
+        localStorage.setItem(STORAGE_KEY, lang);
     });
 
-    // Pagination refresh
+    // Menü çevirisini engelle
+    const menuBlocker = setInterval(() => {
+        const menu = document.getElementById('wrhr-custom-lang');
+        if (!menu) return;
+
+        menu.classList.add('notranslate');
+        menu.querySelectorAll('option').forEach(o => o.classList.add('notranslate'));
+
+        clearInterval(menuBlocker);
+    }, 300);
+
     document.addEventListener('wrhr_page_changed', function() {
-        const lang = localStorage.getItem('wrhr_lang');
+        const lang = localStorage.getItem(STORAGE_KEY);
         if (!lang || lang === 'en') return;
 
-        setTimeout(() => wrhrApplyLanguage(lang), 200);
+        wrhrApplyLanguage(lang, 150);
     });
 })();
 

@@ -137,7 +137,7 @@ class WRHR_Assets {
                 </div>
 
                 <div id="wrhr-custom-translate">
-                    <select id="wrhr-lang">
+                    <select id="wrhr-custom-lang">
                         <option value="en">English (Original)</option>
                         <option value="de">German</option>
                         <option value="fr">French</option>
