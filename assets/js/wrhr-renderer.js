@@ -428,13 +428,9 @@ jQuery(function($){
 
     // Open modal
     function wrhrRestoreLanguageOnOpen() {
-        const saved = localStorage.getItem('wrhr_lang');
+        const saved = localStorage.getItem('wrhr_last_lang');
         if (!saved) return;
-
-        const select = document.getElementById('wrpr-lang-select');
         const googleCombo = document.querySelector('.goog-te-combo');
-
-        if (select) select.value = saved;
         if (googleCombo) {
             googleCombo.value = saved;
             googleCombo.dispatchEvent(new Event('change'));
@@ -530,7 +526,7 @@ jQuery(function($){
         wrhrTranslateRefresh();
 
         function wrhrRestoreLanguageAfterPagination() {
-            const saved = localStorage.getItem('wrhr_lang');
+            const saved = localStorage.getItem('wrhr_last_lang');
             if (!saved) return;
 
             const googleCombo = document.querySelector('.goog-te-combo');
@@ -564,7 +560,7 @@ jQuery(function($){
      */
     function wrhrGetTranslateCombo() {
         // Only use the combo created inside our hidden container
-        return document.querySelector('#wrhr-google-container select.goog-te-combo');
+        return document.querySelector('#google_translate_element select.goog-te-combo') || document.querySelector('select.goog-te-combo');
     }
 
     function wrhrWaitForTranslateCombo(callback) {
@@ -587,6 +583,16 @@ jQuery(function($){
             }
             tries++;
         }, 200);
+    }
+
+    function wrhrBindGoogleComboPersistence() {
+        wrhrWaitForTranslateCombo(function(combo) {
+            combo.addEventListener('change', function () {
+                try {
+                    localStorage.setItem('wrhr_last_lang', combo.value);
+                } catch (e) {}
+            });
+        });
     }
 
     /**
@@ -615,6 +621,8 @@ jQuery(function($){
             }
         } catch (e) {}
     }
+
+    wrhrBindGoogleComboPersistence();
 
     /**
      * Restore last language on modal open.
@@ -708,48 +716,4 @@ jQuery(function($){
         }, 200);
     });
 
-    /* Modern Language Dropdown */
-    const dd = document.getElementById("wrhr-lang-dropdown");
-    if (dd) {
-        const toggle = dd.querySelector(".wrhr-lang-toggle");
-        const menu = dd.querySelector(".wrhr-lang-menu");
-
-        toggle.addEventListener("click", () => {
-            menu.style.display = menu.style.display === "block" ? "none" : "block";
-        });
-
-        // Hide when clicking outside
-        document.addEventListener("click", (e) => {
-            if (!dd.contains(e.target)) {
-                menu.style.display = "none";
-            }
-        });
-
-        // Select language
-        menu.querySelectorAll(".wrhr-lang-option").forEach(option => {
-            option.addEventListener("click", () => {
-                const lang = option.getAttribute("data-lang");
-
-                // CONNECT DROPDOWN → TRANSLATE
-                wrhrSetLanguage(lang);
-
-                // Update UI
-                toggle.textContent = option.textContent + " ▼";
-
-                // Persist state
-                try {
-                    localStorage.setItem("wrhr_last_lang", lang);
-                } catch (e) {}
-
-                menu.style.display = "none";
-            });
-        });
-
-        /* Restore last language */
-        const saved = localStorage.getItem('wrhr_last_lang');
-        if (saved) {
-            const match = menu.querySelector(`[data-lang="${saved}"]`);
-            if (match) toggle.textContent = match.textContent + " ▼";
-        }
-    }
 });
