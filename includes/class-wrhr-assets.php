@@ -57,7 +57,7 @@ class WRHR_Assets {
          * Dropdown çeviri menüsünün sürekli çalışmasını garanti eder.
          */
         add_action( 'wp_head', function() {
-            echo '<meta name="google" content="notranslate">';
+            echo '<meta name="google" content="notranslate" />';
             echo '<style>
                 html:not([data-wrhr-reader]) * {
                     translate: none !important;
@@ -141,27 +141,6 @@ class WRHR_Assets {
                         </div>
                     </div>
 
-                    <div class="wrhr-lang-dropdown notranslate" id="wrhr-lang-dropdown">
-                        <button type="button" class="wrhr-lang-toggle notranslate">Language ▼</button>
-                        <div class="wrhr-lang-menu notranslate" style="display:none;">
-                            <div class="wrhr-lang-option" data-lang="en">English</div>
-                            <div class="wrhr-lang-option" data-lang="de">German</div>
-                            <div class="wrhr-lang-option" data-lang="fr">French</div>
-                            <div class="wrhr-lang-option" data-lang="it">Italian</div>
-                            <div class="wrhr-lang-option" data-lang="pt">Portuguese</div>
-                            <div class="wrhr-lang-option" data-lang="tr">Turkish</div>
-                            <div class="wrhr-lang-option" data-lang="ru">Russian</div>
-                            <div class="wrhr-lang-option" data-lang="es">Spanish</div>
-                            <div class="wrhr-lang-option" data-lang="hi">Hindi</div>
-                            <div class="wrhr-lang-option" data-lang="ja">Japanese</div>
-                            <div class="wrhr-lang-option" data-lang="zh-CN">Chinese (Simplified)</div>
-                            <div class="wrhr-lang-option" data-lang="no">Norwegian</div>
-                            <div class="wrhr-lang-option" data-lang="ar">Arabic</div>
-                            <div class="wrhr-lang-option" data-lang="nl">Dutch</div>
-                            <div class="wrhr-lang-option" data-lang="pl">Polish</div>
-                        </div>
-                    </div>
-
                     <div class="wrhr-modal-controls">
                         <button class="wrhr-fs-btn" id="wrhr-fs-btn">⤢</button>
                         <button class="wrhr-close" id="wrhr-close">×</button>
@@ -173,27 +152,7 @@ class WRHR_Assets {
                     <div id="wrhr-page-wrapper"></div>
                 </div>
 
-                <div id="wrhr-translate-bar" class="notranslate" translate="no">
-                    <select id="wrpr-lang-select">
-                        <option value="en">English</option>
-                        <option value="de">German</option>
-                        <option value="fr">French</option>
-                        <option value="it">Italian</option>
-                        <option value="pt">Portuguese</option>
-                        <option value="tr">Turkish</option>
-                        <option value="ru">Russian</option>
-                        <option value="es">Spanish</option>
-                        <option value="hi">Hindi</option>
-                        <option value="ja">Japanese</option>
-                        <option value="zh-CN">Chinese (Simplified)</option>
-                        <option value="no">Norwegian</option>
-                        <option value="ar">Arabic</option>
-                        <option value="nl">Dutch</option>
-                        <option value="pl">Polish</option>
-                    </select>
-                </div>
-
-                <div id="google_translate_element" style="display:none;"></div>
+                <div id="google_translate_element" class="wrhr-google-dropdown notranslate" translate="no"></div>
 
                 <div class="wrhr-controls wrhr-toolbar notranslate" translate="no">
                     <button id="wrhr-prev">⟨⟨</button>
