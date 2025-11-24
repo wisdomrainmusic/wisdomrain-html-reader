@@ -40,3 +40,39 @@ function wrhr_load_textdomain() {
 
 add_action( 'plugins_loaded', 'wrhr_initialize_plugin' );
 add_action( 'init', 'wrhr_load_textdomain' );
+
+/* ===============================================================
+   WRHR — FINAL INLINE STYLE CLEANER (Word HTML Cleanup)
+   =============================================================== */
+
+add_filter( 'wrhr_clean_html_before_paginate', function ( $html ) {
+
+    // 1) Remove all inline style="" attributes
+    $html = preg_replace( '/\s*style=("|\')(.*?)("|\')/i', '', $html );
+
+    // 2) Remove all inline font-family attributes
+    $html = preg_replace( '/\s*font-family:[^;"]*;?/i', '', $html );
+
+    // 3) Remove color attributes (Word paints titles blue)
+    $html = preg_replace( '/\s*color:[^;"]*;?/i', '', $html );
+
+    // 4) Remove size attributes (font-size)
+    $html = preg_replace( '/\s*font-size:[^;"]*;?/i', '', $html );
+
+    // 5) Remove line-height attributes
+    $html = preg_replace( '/\s*line-height:[^;"]*;?/i', '', $html );
+
+    // 6) Clean Word spans: <span class=...> → <span>
+    $html = preg_replace( '/<span[^>]*>/i', '<span>', $html );
+
+    // 7) Remove empty spans created by Word
+    $html = preg_replace( '/<span>\s*<\/span>/i', '', $html );
+
+    // 8) Remove <font> tags completely (for older docs)
+    $html = preg_replace( '/<\/?font[^>]*>/i', '', $html );
+
+    return $html;
+} );
+
+
+
