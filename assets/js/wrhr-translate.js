@@ -48,4 +48,20 @@
         googleCombo.dispatchEvent(event);
     }
 
+    /**
+     * 3) Dropdown → Google Translate Combo bağlantısı
+     */
+    document.addEventListener('change', function(e) {
+        if (e.target.id === 'wrpr-lang-select') {
+            const lang = e.target.value;
+            localStorage.setItem('wrhr_lang', lang);
+
+            const googleCombo = document.querySelector('.goog-te-combo');
+            if (googleCombo) {
+                googleCombo.value = lang;
+                googleCombo.dispatchEvent(new Event('change'));
+            }
+        }
+    });
+
 })();

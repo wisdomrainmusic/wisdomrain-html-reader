@@ -427,6 +427,20 @@ jQuery(function($){
     let WRHR_BLOCKS = [];
 
     // Open modal
+    function wrhrRestoreLanguageOnOpen() {
+        const saved = localStorage.getItem('wrhr_lang');
+        if (!saved) return;
+
+        const select = document.getElementById('wrpr-lang-select');
+        const googleCombo = document.querySelector('.goog-te-combo');
+
+        if (select) select.value = saved;
+        if (googleCombo) {
+            googleCombo.value = saved;
+            googleCombo.dispatchEvent(new Event('change'));
+        }
+    }
+
     $('.wrhr-read-btn').on('click', async function(){
 
         const url = $(this).data('html');
@@ -441,6 +455,7 @@ jQuery(function($){
             bookIndex: WRHR_ACTIVE_BOOK_INDEX,
         });
 
+        wrhrRestoreLanguageOnOpen();
         wrhrTranslate.restoreLastLanguage();
 
         modal.addClass('active');
@@ -513,6 +528,19 @@ jQuery(function($){
 
         wrhrTranslate.refresh();
         wrhrTranslateRefresh();
+
+        function wrhrRestoreLanguageAfterPagination() {
+            const saved = localStorage.getItem('wrhr_lang');
+            if (!saved) return;
+
+            const googleCombo = document.querySelector('.goog-te-combo');
+            if (googleCombo) {
+                googleCombo.value = saved;
+                googleCombo.dispatchEvent(new Event('change'));
+            }
+        }
+
+        wrhrRestoreLanguageAfterPagination();
     }
 
     $('#wrhr-next').on('click', function(){
