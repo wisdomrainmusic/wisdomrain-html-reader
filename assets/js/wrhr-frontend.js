@@ -18,24 +18,34 @@ function wrhrRemoveGoogleBranding() {
     });
 }
 
-/* WRHR — Remove Google Translate top blue banner */
+/* WRHR — Force Remove Google Banner */
 function wrhrRemoveGoogleTopBar() {
-    document.querySelectorAll("iframe.goog-te-banner-frame").forEach(el => el.remove());
+    try {
+        // Remove Google Translate iframe banner
+        document.querySelectorAll("iframe.goog-te-banner-frame").forEach(el => el.remove());
 
-    ["goog-gt-tt", "goog-gt-expanded", "goog-gt-placeholder"].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.remove();
-    });
+        // Remove Google expand tooltips
+        const ids = [
+            "goog-gt-tt",
+            "goog-gt-expanded",
+            "goog-gt-placeholder"
+        ];
+        ids.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        });
 
-    document.body.style.top = "0px";
+        // Reset spacing Google forces
+        document.body.style.top = "0px";
+    } catch (e) {}
 }
 
-/* Auto-run both removers forever */
+// Run immediately
+wrhrRemoveGoogleBranding();
+wrhrRemoveGoogleTopBar();
+
+// Keep killing every 0.5s (Google tries to bring it back)
 setInterval(() => {
     wrhrRemoveGoogleBranding();
     wrhrRemoveGoogleTopBar();
 }, 500);
-
-// Initial run
-wrhrRemoveGoogleBranding();
-wrhrRemoveGoogleTopBar();
