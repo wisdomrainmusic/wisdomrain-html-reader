@@ -21,6 +21,8 @@ class WRHR_Cleaner {
     public static function clean_html( $html ) {
         $raw_html = (string) $html;
 
+        $raw_html = apply_filters( 'wrhr_clean_html_before_paginate', $raw_html );
+
         if ( '' === trim( $raw_html ) ) {
             return $raw_html;
         }
