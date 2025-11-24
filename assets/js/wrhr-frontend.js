@@ -154,9 +154,14 @@ setInterval(() => {
         combo.selectedIndex = 0;
         combo.dispatchEvent(new Event("change"));
 
+        // Browser’ın otomatik dil algılama zorlamasını kır
+        document.documentElement.removeAttribute("lang");
+
         setTimeout(() => {
             combo.selectedIndex = 0;
             combo.dispatchEvent(new Event("change"));
+
+            document.documentElement.removeAttribute("lang");
         }, 120);
     }
 
