@@ -136,6 +136,26 @@ class WRHR_Assets {
                     <button id="wrhr-next">⟩⟩</button>
                 </div>
 
+                <div id="wrhr-custom-translate">
+                    <select id="wrhr-lang">
+                        <option value="en">English (Original)</option>
+                        <option value="de">German</option>
+                        <option value="fr">French</option>
+                        <option value="it">Italian</option>
+                        <option value="pt">Portuguese</option>
+                        <option value="tr">Turkish</option>
+                        <option value="ru">Russian</option>
+                        <option value="es">Spanish</option>
+                        <option value="hi">Hindi</option>
+                        <option value="ja">Japanese</option>
+                        <option value="zh-CN">Chinese (Simplified)</option>
+                        <option value="no">Norwegian</option>
+                        <option value="ar">Arabic</option>
+                        <option value="nl">Dutch</option>
+                        <option value="pl">Polish</option>
+                    </select>
+                </div>
+
                 <script type="text/javascript">
                 function googleTranslateElementInit() {
                   new google.translate.TranslateElement(

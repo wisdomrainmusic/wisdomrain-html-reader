@@ -49,3 +49,54 @@ setInterval(() => {
     wrhrRemoveGoogleBranding();
     wrhrRemoveGoogleTopBar();
 }, 500);
+
+/* ============================================
+   WRHR CUSTOM TRANSLATE MENU – ENGINE
+   ============================================ */
+
+function wrhrApplyLanguage(lang) {
+    const combo = document.querySelector('.goog-te-combo');
+    if (combo) {
+        combo.value = lang;
+        combo.dispatchEvent(new Event("change"));
+    }
+}
+
+(function() {
+    const select = document.getElementById('wrhr-lang');
+
+    // LocalStorage Load
+    const saved = localStorage.getItem('wrhr_lang');
+    if (saved) {
+        select.value = saved;
+        if (saved !== 'en') {
+            setTimeout(() => wrhrApplyLanguage(saved), 300);
+        }
+    }
+
+    // On Change
+    select.addEventListener('change', function() {
+        localStorage.setItem('wrhr_lang', this.value);
+
+        if (this.value === 'en') {
+            // original language
+            wrhrApplyLanguage('');
+        } else {
+            wrhrApplyLanguage(this.value);
+        }
+    });
+
+    // Pagination refresh
+    document.addEventListener('wrhr_page_changed', function() {
+        const lang = localStorage.getItem('wrhr_lang');
+        if (!lang || lang === 'en') return;
+
+        setTimeout(() => wrhrApplyLanguage(lang), 200);
+    });
+})();
+
+// Hard kill Google banner iframe repeatedly
+setInterval(() => {
+    document.querySelectorAll("iframe.goog-te-banner-frame").forEach(el => el.remove());
+    document.body.style.top = "0px";
+}, 500);
