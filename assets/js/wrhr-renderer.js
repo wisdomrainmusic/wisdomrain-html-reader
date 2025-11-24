@@ -421,6 +421,30 @@ jQuery(function($){
 
     let WRHR_BLOCKS = [];
 
+    function WRHR_recalculateLayout() {
+        calcA5Height();
+
+        if (WRHR_PAGES.length > 0) {
+            WRHR_PAGES = paginateBlocks(WRHR_BLOCKS);
+            renderPage(Math.min(WRHR_INDEX, WRHR_PAGES.length - 1));
+        }
+    }
+
+    window.WRHR_recalculateLayout = WRHR_recalculateLayout;
+
+    function wrhrEnterFullscreen() {
+        const modalContent = document.getElementById('wrhr-modal-content');
+        if (!modalContent) return;
+
+        if (!modalContent.classList.contains('fullscreen')) {
+            modalContent.classList.add('fullscreen');
+        }
+
+        if (typeof window.WRHR_recalculateLayout === 'function') {
+            setTimeout(() => window.WRHR_recalculateLayout(), 350);
+        }
+    }
+
     // Open modal
     function wrhrRestoreLanguageOnOpen() {
         const saved = wrhrGetSavedLanguage();
@@ -457,6 +481,8 @@ jQuery(function($){
             $('#wrhr-modal-title').text('Untitled');
         }
 
+        wrhrEnterFullscreen();
+
         $('#wrhr-page-wrapper').html('<div class="wrhr-page">Loading…</div>');
 
         let cleanHTML = await loadHTML(url);
@@ -483,14 +509,9 @@ jQuery(function($){
     $('#wrhr-fs-btn').on('click', function(){
         $('#wrhr-modal-content').toggleClass('fullscreen');
 
-        setTimeout(() => {
-            calcA5Height();
-
-            if (WRHR_PAGES.length > 0){
-                WRHR_PAGES = paginateBlocks(WRHR_BLOCKS);
-                renderPage(Math.min(WRHR_INDEX, WRHR_PAGES.length - 1));
-            }
-        }, 350);
+        if (typeof window.WRHR_recalculateLayout === 'function') {
+            setTimeout(() => window.WRHR_recalculateLayout(), 350);
+        }
     });
 
     function renderPage(i){
