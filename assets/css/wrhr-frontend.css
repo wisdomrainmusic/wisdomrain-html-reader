@@ -1,0 +1,32 @@
+/* Google Translate bar ve overlay temizliği */
+.goog-te-banner-frame {
+    display: none !important;
+}
+
+body {
+    top: 0 !important;
+}
+
+.goog-tooltip,
+.goog-tooltip:hover,
+.goog-te-spinner-pos {
+    display: none !important;
+}
+
+/* Translate dropdown styling */
+#wrhr-translate-bar {
+   display:flex;
+   justify-content:flex-end;
+   padding:10px 20px;
+   margin-bottom:5px;
+}
+
+#wrpr-lang-select {
+   background: #201810;
+   color:#f5d77c;
+   padding:8px 12px;
+   border-radius:8px;
+   border:1px solid #725a29;
+   font-size:15px;
+   cursor:pointer;
+}

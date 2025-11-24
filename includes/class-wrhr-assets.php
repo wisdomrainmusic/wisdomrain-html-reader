@@ -21,6 +21,13 @@ class WRHR_Assets {
         $flags_base_url = WRHR_Languages::get_flags_base_url();
 
         wp_enqueue_style(
+            'wrhr-frontend',
+            $base_url . 'assets/css/wrhr-frontend.css',
+            array(),
+            WRHR_VERSION
+        );
+
+        wp_enqueue_style(
             'wrhr-style',
             $base_url . 'assets/css/wrhr-style.css',
             array(),
@@ -116,33 +123,6 @@ class WRHR_Assets {
         }
     }
 
-    /**
-     * Hidden container + JS callback for Google Translate engine.
-     */
-    public static function render_google_translate_container() {
-        ?>
-        <!-- Hidden container for Google Translate widget -->
-        <div id="wrhr-google-container" class="notranslate" style="display:none;"></div>
-
-        <!-- Load Google Translate script hardwired -->
-        <script src="https://translate.google.com/translate_a/element.js?cb=wrhrGoogleTranslateInit"></script>
-
-        <script>
-        // Single place that creates the internal combo select.goog-te-combo
-        function wrhrGoogleTranslateInit() {
-            if (window.google && google.translate && google.translate.TranslateElement) {
-                new google.translate.TranslateElement({
-                    pageLanguage: 'en',
-                    includedLanguages: 'en,de,fr,it,pt,tr,ru,es,hi,ja,zh-CN,no,ar,nl,pl',
-                    autoDisplay: false,
-                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-                }, 'wrhr-google-container');
-            }
-        }
-        </script>
-        <?php
-    }
-
     /** Render the global reader modal markup. */
     public static function render_modal() {
         ?>
@@ -193,17 +173,52 @@ class WRHR_Assets {
                     <div id="wrhr-page-wrapper"></div>
                 </div>
 
-                <div class="wrhr-controls">
+                <div id="wrhr-translate-bar" class="notranslate" translate="no">
+                    <select id="wrpr-lang-select">
+                        <option value="en">English</option>
+                        <option value="de">German</option>
+                        <option value="fr">French</option>
+                        <option value="it">Italian</option>
+                        <option value="pt">Portuguese</option>
+                        <option value="tr">Turkish</option>
+                        <option value="ru">Russian</option>
+                        <option value="es">Spanish</option>
+                        <option value="hi">Hindi</option>
+                        <option value="ja">Japanese</option>
+                        <option value="zh-CN">Chinese (Simplified)</option>
+                        <option value="no">Norwegian</option>
+                        <option value="ar">Arabic</option>
+                        <option value="nl">Dutch</option>
+                        <option value="pl">Polish</option>
+                    </select>
+                </div>
+
+                <div id="google_translate_element" style="display:none;"></div>
+
+                <div class="wrhr-controls wrhr-toolbar notranslate" translate="no">
                     <button id="wrhr-prev">⟨⟨</button>
                     <span id="wrhr-page-info">Page 1 / 1</span>
                     <button id="wrhr-next">⟩⟩</button>
                 </div>
+
+                <script type="text/javascript">
+                function googleTranslateElementInit() {
+                  new google.translate.TranslateElement(
+                    {
+                      pageLanguage: 'en',
+                      includedLanguages: 'en,de,fr,it,pt,tr,ru,es,hi,ja,zh-CN,no,ar,nl,pl',
+                      autoDisplay: false
+                    },
+                    'google_translate_element'
+                  );
+                }
+                </script>
+
+                <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
             </div>
         </div>
         <?php
     }
 }
-
-add_action( 'wp_footer', array( 'WRHR_Assets', 'render_google_translate_container' ) );
 add_action( 'wp_footer', array( 'WRHR_Assets', 'render_modal' ) );
