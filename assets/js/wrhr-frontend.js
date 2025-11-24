@@ -54,31 +54,42 @@ setInterval(() => {
    WRHR CUSTOM TRANSLATE MENU – ENGINE
    ============================================ */
 
+const WRHR_LANG_STORAGE_KEY = 'wrhr_lang';
+const WRHR_LANG_ORIGINAL    = 'ORIGINAL';
+
 function wrhrApplyLanguage(lang, delay = 0) {
-    const apply = () => {
-        const combo = document.querySelector('.goog-te-combo');
-        if (!combo) return;
+    const combo = document.querySelector('select.goog-te-combo');
 
-        if (!lang || lang === 'en') {
-            combo.value = '';
-            combo.dispatchEvent(new Event('change'));
-
-            // cache kırmak için ikinci tetikleme
-            setTimeout(() => {
-                combo.value = '';
-                combo.dispatchEvent(new Event('change'));
-            }, 100);
+    const run = () => {
+        if (!combo) {
+            // Combo henüz hazır değilse sadece storage güncelle
+            window.localStorage.setItem(WRHR_LANG_STORAGE_KEY, lang);
             return;
         }
 
-        combo.value = lang;
-        combo.dispatchEvent(new Event('change'));
+        if (lang === WRHR_LANG_ORIGINAL) {
+            // Orijinale dön → Google Translate’i resetle
+            combo.value = '';
+            combo.dispatchEvent(new Event('change'));
+
+            // Tarayıcının "sayfa dili TR" sapıtmasını engellemek için lang temizle
+            const html = document.documentElement;
+            if (html) {
+                html.removeAttribute('lang');
+            }
+        } else {
+            // Normal bir hedef dil → Google combo’yu o dile al
+            combo.value = lang;
+            combo.dispatchEvent(new Event('change'));
+        }
+
+        window.localStorage.setItem(WRHR_LANG_STORAGE_KEY, lang);
     };
 
     if (delay > 0) {
-        setTimeout(apply, delay);
+        setTimeout(run, delay);
     } else {
-        apply();
+        run();
     }
 }
 
@@ -86,31 +97,21 @@ function wrhrApplyLanguage(lang, delay = 0) {
     const select = document.getElementById('wrhr-custom-lang');
     if (!select) return;
 
-    const STORAGE_KEY = 'wrhr_lang';
-    const saved = localStorage.getItem(STORAGE_KEY) || 'en';
+    const saved = localStorage.getItem(WRHR_LANG_STORAGE_KEY);
 
-    select.value = saved;
-    if (saved !== 'en') {
-        wrhrApplyLanguage(saved, 300);
+    if (saved) {
+        select.value = saved === WRHR_LANG_ORIGINAL ? 'EN' : saved;
+        wrhrApplyLanguage(saved, 500);
     }
 
     select.addEventListener('change', function() {
-        const lang = this.value;
-        const combo = document.querySelector('.goog-te-combo');
+        const value = this.value; // EN, FR, DE, ES...
+        const target =
+            value === 'EN'
+                ? WRHR_LANG_ORIGINAL
+                : value;
 
-        if (lang === 'en') {
-            if (combo) {
-                wrhrApplyLanguage('en');
-            }
-            this.value = 'en';
-            localStorage.setItem(STORAGE_KEY, 'en');
-            return;
-        }
-
-        if (combo) {
-            wrhrApplyLanguage(lang);
-        }
-        localStorage.setItem(STORAGE_KEY, lang);
+        wrhrApplyLanguage(target, 150);
     });
 
     // Menü çevirisini engelle
@@ -125,56 +126,33 @@ function wrhrApplyLanguage(lang, delay = 0) {
     }, 300);
 
     document.addEventListener('wrhr_page_changed', function() {
-        const lang = localStorage.getItem(STORAGE_KEY);
-        if (!lang || lang === 'en') return;
+        const saved = window.localStorage.getItem(WRHR_LANG_STORAGE_KEY);
+        if (!saved) return;
 
-        wrhrApplyLanguage(lang, 150);
+        // İngilizce (Original) seçiliyse her sayfa değişiminde net reset
+        if (saved === WRHR_LANG_ORIGINAL) {
+            wrhrApplyLanguage(WRHR_LANG_ORIGINAL, 50);
+            return;
+        }
+
+        wrhrApplyLanguage(saved, 50);
     });
 })();
 
-// Hard kill Google banner iframe repeatedly
-setInterval(() => {
-    document.querySelectorAll("iframe.goog-te-banner-frame").forEach(el => el.remove());
-    document.body.style.top = "0px";
-}, 500);
+(function () {
+    let runs = 0;
+    const maxRuns = 40; // ~40 * 1000ms = 40 saniye
 
-/* ========================================================
-   WRHR - MINI FIX: English Reset Always Works
-   ======================================================== */
-(function() {
+    const intervalId = setInterval(() => {
+        runs++;
 
-    const select = document.getElementById("wrhr-custom-lang");
-    if (!select) return;
-
-    function wrhrForceEnglishReset() {
-        const combo = document.querySelector(".goog-te-combo");
-        if (!combo) return;
-
-        // Google’ın güvenli sıfırlama modu
-        combo.selectedIndex = 0;
-        combo.dispatchEvent(new Event("change"));
-
-        // Browser’ın otomatik dil algılama zorlamasını kır
-        document.documentElement.removeAttribute("lang");
-
-        setTimeout(() => {
-            combo.selectedIndex = 0;
-            combo.dispatchEvent(new Event("change"));
-
-            document.documentElement.removeAttribute("lang");
-        }, 120);
-    }
-
-    // Dropdown değişiminde EN seçilmişse → çeviriyi tamamen kapat
-    select.addEventListener("change", function() {
-        if (this.value === "en") {
-            wrhrForceEnglishReset();
-
-            // Menü İngilizce’de kalsın
-            this.value = "en";
-
-            localStorage.setItem("wrhr_lang", "en");
+        document.querySelectorAll("iframe.goog-te-banner-frame").forEach(el => el.remove());
+        if (document.body && document.body.style.top !== '0px') {
+            document.body.style.top = '0px';
         }
-    });
 
+        if (runs >= maxRuns) {
+            clearInterval(intervalId);
+        }
+    }, 1000); // 1 saniyeye düşürdük
 })();
