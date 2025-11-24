@@ -1,25 +1,54 @@
-/* WRHR GOLDEN TRANSLATE DROPDOWN */
+/* ============================================
+   WRHR – Google Translate Dropdown Final Styling
+=============================================== */
+
+/* Google gadget içindeki gereksiz span ve görselleri gizle */
+.goog-te-gadget span,
+.goog-te-gadget img {
+    display: none !important;
+}
+
+/* Dropdown – Reader'ın içinde sağ alta sabitleme */
 .goog-te-combo {
-    background: #f5d77c !important;   /* Altın arka plan */
-    color: #000 !important;            /* Siyah yazı */
+    position: absolute !important;
+    bottom: 20px !important;
+    right: 20px !important;
+
+    z-index: 999999 !important;
+
+    background: #f5d77c !important;     /* Altın */
+    color: #000 !important;              /* Siyah yazı */
+
     border: 2px solid #8c6f3f !important;
-    border-radius: 8px !important;
-    padding: 8px 12px !important;
+    border-radius: 10px !important;
+
+    padding: 10px 14px !important;
     font-size: 16px !important;
     font-weight: 600 !important;
+
     cursor: pointer !important;
     outline: none !important;
 
-    /* Mobilde sağ altta sabit dursun */
-    position: fixed !important;
-    bottom: 20px !important;
-    right: 20px !important;
-    z-index: 99999 !important;
+    max-width: 220px !important;
 }
 
-/* Dropdown içi stiller */
+/* Açılır menü stilleri */
 .goog-te-combo option {
     background: #f5d77c !important;
     color: #000 !important;
 }
 
+/* Reader içi konumlama için gerekli */
+.wrhr-modal-content,
+.wrhr-reader {
+    position: relative !important;
+}
+
+/* Dropdown'un gizlenmesini engelle */
+.goog-te-gadget,
+.goog-te-combo {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}

@@ -10,7 +10,23 @@ jQuery(function($){
     const wrhrLangConfig = window.wrhrLangConfig || {};
     const WRHR_STORAGE_KEYS = wrhrLangConfig.storage_keys || {};
     const WRHR_LAST_LANG_KEY = WRHR_STORAGE_KEYS.last_lang || 'wrhr_last_lang';
+    const WRHR_FALLBACK_LANG_KEY = 'wrhr_lang';
     const WRHR_LAST_PAGE_PREFIX = WRHR_STORAGE_KEYS.last_page_prefix || 'wrhr_last_page_';
+
+    function wrhrPersistLanguage(value) {
+        try {
+            localStorage.setItem(WRHR_LAST_LANG_KEY, value);
+            localStorage.setItem(WRHR_FALLBACK_LANG_KEY, value);
+        } catch (e) {}
+    }
+
+    function wrhrGetSavedLanguage() {
+        try {
+            return localStorage.getItem(WRHR_LAST_LANG_KEY) || localStorage.getItem(WRHR_FALLBACK_LANG_KEY);
+        } catch (e) {
+            return null;
+        }
+    }
 
     const wrhrTranslate = {
         languages: wrhrLangConfig.languages || [],
@@ -36,7 +52,7 @@ jQuery(function($){
         },
 
         restoreLastLanguage() {
-            const stored = localStorage.getItem(WRHR_LAST_LANG_KEY);
+            const stored = wrhrGetSavedLanguage();
             if (!stored) {
                 return;
             }
@@ -53,7 +69,7 @@ jQuery(function($){
             this.highlightActive(language.code);
 
             if (options.persist !== false) {
-                localStorage.setItem(WRHR_LAST_LANG_KEY, language.code);
+                wrhrPersistLanguage(language.code);
             }
 
             if (!options.silent) {
@@ -428,13 +444,13 @@ jQuery(function($){
 
     // Open modal
     function wrhrRestoreLanguageOnOpen() {
-        const saved = localStorage.getItem('wrhr_last_lang');
+        const saved = wrhrGetSavedLanguage();
         if (!saved) return;
-        const googleCombo = document.querySelector('.goog-te-combo');
-        if (googleCombo) {
-            googleCombo.value = saved;
-            googleCombo.dispatchEvent(new Event('change'));
-        }
+
+        wrhrWaitForTranslateCombo(function(combo) {
+            combo.value = saved;
+            combo.dispatchEvent(new Event('change'));
+        });
     }
 
     $('.wrhr-read-btn').on('click', async function(){
@@ -524,19 +540,19 @@ jQuery(function($){
 
         wrhrTranslate.refresh();
         wrhrTranslateRefresh();
-
-        function wrhrRestoreLanguageAfterPagination() {
-            const saved = localStorage.getItem('wrhr_last_lang');
-            if (!saved) return;
-
-            const googleCombo = document.querySelector('.goog-te-combo');
-            if (googleCombo) {
-                googleCombo.value = saved;
-                googleCombo.dispatchEvent(new Event('change'));
-            }
-        }
-
         wrhrRestoreLanguageAfterPagination();
+    }
+
+    function wrhrRestoreLanguageAfterPagination() {
+        const saved = wrhrGetSavedLanguage();
+        if (!saved) return;
+
+        setTimeout(() => {
+            wrhrWaitForTranslateCombo(function(combo) {
+                combo.value = saved;
+                combo.dispatchEvent(new Event('change'));
+            });
+        }, 200);
     }
 
     $('#wrhr-next').on('click', function(){
@@ -589,7 +605,7 @@ jQuery(function($){
         wrhrWaitForTranslateCombo(function(combo) {
             combo.addEventListener('change', function () {
                 try {
-                    localStorage.setItem('wrhr_last_lang', combo.value);
+                    wrhrPersistLanguage(combo.value);
                 } catch (e) {}
             });
         });
@@ -605,7 +621,7 @@ jQuery(function($){
             combo.dispatchEvent(new Event("change"));
 
             try {
-                localStorage.setItem("wrhr_last_lang", langCode);
+                wrhrPersistLanguage(langCode);
             } catch (e) {}
         });
     }
@@ -615,7 +631,7 @@ jQuery(function($){
      */
     function wrhrTranslateRefresh() {
         try {
-            var saved = localStorage.getItem('wrhr_last_lang');
+            var saved = wrhrGetSavedLanguage();
             if (saved) {
                 wrhrSetLanguage(saved);
             }
@@ -629,7 +645,7 @@ jQuery(function($){
      */
     function wrhrRestoreLastLanguage() {
         try {
-            const lang = localStorage.getItem('wrhr_last_lang');
+            const lang = wrhrGetSavedLanguage();
             if (!lang) return;
 
             // Slight delay so modal content is ready
@@ -705,6 +721,7 @@ jQuery(function($){
 
     // Whenever modal opens, restore language
     document.addEventListener('wrhr_modal_opened', function () {
+        wrhrRestoreLanguageOnOpen();
         wrhrRestoreLastLanguage();
         wrhrTranslateRefresh();
     });
