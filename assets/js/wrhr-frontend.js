@@ -137,3 +137,39 @@ setInterval(() => {
     document.querySelectorAll("iframe.goog-te-banner-frame").forEach(el => el.remove());
     document.body.style.top = "0px";
 }, 500);
+
+/* ========================================================
+   WRHR - MINI FIX: English Reset Always Works
+   ======================================================== */
+(function() {
+
+    const select = document.getElementById("wrhr-custom-lang");
+    if (!select) return;
+
+    function wrhrForceEnglishReset() {
+        const combo = document.querySelector(".goog-te-combo");
+        if (!combo) return;
+
+        // Google’ın güvenli sıfırlama modu
+        combo.selectedIndex = 0;
+        combo.dispatchEvent(new Event("change"));
+
+        setTimeout(() => {
+            combo.selectedIndex = 0;
+            combo.dispatchEvent(new Event("change"));
+        }, 120);
+    }
+
+    // Dropdown değişiminde EN seçilmişse → çeviriyi tamamen kapat
+    select.addEventListener("change", function() {
+        if (this.value === "en") {
+            wrhrForceEnglishReset();
+
+            // Menü İngilizce’de kalsın
+            this.value = "en";
+
+            localStorage.setItem("wrhr_lang", "en");
+        }
+    });
+
+})();
