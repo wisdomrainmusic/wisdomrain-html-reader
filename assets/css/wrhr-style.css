@@ -3,9 +3,11 @@
 }
 
 .wrhr-header h2 {
-    margin-bottom: 20px;
-    color: #b8860b;
-    font-size: 28px;
+    font-size: 32px !important;    /* daha büyük */
+    font-weight: 800 !important;   /* daha güçlü */
+    color: #111 !important;        /* saf siyah */
+    letter-spacing: 0.02em !important;
+    margin-bottom: 24px !important;
 }
 
 .wrhr-book-list {

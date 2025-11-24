@@ -427,6 +427,20 @@ body.wrhr-modal-open {
 #wrhr-modal h3 { font-size: 22px !important; }
 #wrhr-modal h4 { font-size: 20px !important; }
 
+/* === WRHR — CONTENT SUBHEADERS (H2–H3–H4 INSIDE PAGE) === */
+#wrhr-modal h2,
+#wrhr-modal h3,
+#wrhr-modal h4,
+.wrhr-page h2,
+.wrhr-page h3,
+.wrhr-page h4 {
+    color: #000 !important;         /* Tam siyah */
+    font-weight: 700 !important;    /* Net */
+    opacity: 1 !important;          /* Flu yok */
+    filter: none !important;
+    mix-blend-mode: normal !important;
+}
+
 .wrhr-modal-title {
     font-size: 22px !important;
     font-weight: 700 !important;
