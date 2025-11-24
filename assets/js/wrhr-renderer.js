@@ -9,10 +9,11 @@ jQuery(function($){
 
     const wrhrLangConfig = window.wrhrLangConfig || {};
     const WRHR_STORAGE_KEYS = wrhrLangConfig.storage_keys || {};
-    const WRHR_LAST_LANG_KEY = WRHR_STORAGE_KEYS.last_lang || 'wrhr_last_lang';
+    const WRHR_LAST_LANG_KEY     = WRHR_STORAGE_KEYS.last_lang || 'wrhr_last_lang';
     const WRHR_FALLBACK_LANG_KEY = 'wrhr_lang';
     const WRHR_LAST_PAGE_PREFIX = WRHR_STORAGE_KEYS.last_page_prefix || 'wrhr_last_page_';
 
+    // ---------------- LANGUAGE STORAGE HELPERS ----------------
     function wrhrPersistLanguage(value) {
         try {
             localStorage.setItem(WRHR_LAST_LANG_KEY, value);
@@ -28,6 +29,7 @@ jQuery(function($){
         }
     }
 
+    // mevcut wrhrTranslate yapısını sadece UI highlight için bırakıyoruz
     const wrhrTranslate = {
         languages: wrhrLangConfig.languages || [],
         selectors: wrhrLangConfig.google_selectors || {},
@@ -71,11 +73,9 @@ jQuery(function($){
             if (options.persist !== false) {
                 wrhrPersistLanguage(language.code);
             }
-
+            // Google çeviriye uygulamayı tek motor üzerinden yap:
             if (!options.silent) {
-                this.applyToGoogle(language);
-            } else {
-                this.applyToGoogle(language, true);
+                wrhrSetLanguage(language.google_code);
             }
 
             $(document).trigger('wrhr_translate_language_changed', { language });
@@ -98,30 +98,9 @@ jQuery(function($){
             return el || null;
         },
 
-        applyToGoogle(language, silent = false) {
-            const combo = this.getGoogleCombo();
-            if (!combo) {
-                return;
-            }
-
-            combo.value = language.google_code;
-
-            const changeEvent = document.createEvent('HTMLEvents');
-            changeEvent.initEvent('change', true, true);
-            combo.dispatchEvent(changeEvent);
-
-            if (!silent) {
-                combo.dispatchEvent(new Event('blur'));
-            }
-        },
-
-        refresh() {
-            if (!this.currentLanguage) {
-                return;
-            }
-
-            this.applyToGoogle(this.currentLanguage);
-        },
+        // applyToGoogle / refresh mantığını kaldırıyoruz; tek motor wrhrSetLanguage
+        applyToGoogle() {},
+        refresh() {},
     };
 
     window.wrhrTranslate = wrhrTranslate;
@@ -490,8 +469,7 @@ jQuery(function($){
 
         const initialPage = restoreLastPage(WRHR_PAGES.length);
         renderPage(initialPage);
-        wrhrTranslate.refresh();
-        wrhrTranslateRefresh();
+        wrhrRestoreLanguageAfterPagination();
 
     });
 
@@ -538,8 +516,6 @@ jQuery(function($){
             bookIndex: WRHR_ACTIVE_BOOK_INDEX,
         });
 
-        wrhrTranslate.refresh();
-        wrhrTranslateRefresh();
         wrhrRestoreLanguageAfterPagination();
     }
 
@@ -601,13 +577,23 @@ jQuery(function($){
         }, 200);
     }
 
+    /**
+     * Combo yeniden yaratıldığında bile dil seçimini kaydet.
+     * Her yeni oluşturulan goog-te-combo için sadece 1 kez listener ekleriz.
+     */
     function wrhrBindGoogleComboPersistence() {
         wrhrWaitForTranslateCombo(function(combo) {
+            if (combo.dataset.wrhrBound === '1') {
+                return;
+            }
+
             combo.addEventListener('change', function () {
                 try {
                     wrhrPersistLanguage(combo.value);
                 } catch (e) {}
             });
+
+            combo.dataset.wrhrBound = '1';
         });
     }
 
@@ -615,7 +601,6 @@ jQuery(function($){
      * Set language on Google Translate widget.
      */
     function wrhrSetLanguage(langCode) {
-        // Wait until combo exists
         wrhrWaitForTranslateCombo(function(combo) {
             combo.value = langCode;
             combo.dispatchEvent(new Event("change"));
@@ -623,6 +608,9 @@ jQuery(function($){
             try {
                 wrhrPersistLanguage(langCode);
             } catch (e) {}
+
+            // Her setLanguage çağrısında persistence listener'ı da garanti altına al
+            wrhrBindGoogleComboPersistence();
         });
     }
 
@@ -638,6 +626,7 @@ jQuery(function($){
         } catch (e) {}
     }
 
+    // Sayfa yüklendiğinde ilk combo için persistence bağla
     wrhrBindGoogleComboPersistence();
 
     /**
@@ -648,10 +637,9 @@ jQuery(function($){
             const lang = wrhrGetSavedLanguage();
             if (!lang) return;
 
-            // Slight delay so modal content is ready
+            // Modal açılışında tek sefer set et
             setTimeout(() => {
                 wrhrSetLanguage(lang);
-                wrhrTranslateRefresh();
             }, 300);
         } catch (e) {}
     }
@@ -687,9 +675,6 @@ jQuery(function($){
             if (readerId && page !== null) {
                 localStorage.setItem('wrhr_last_page_' + readerId, page);
             }
-
-            // Reapply translation
-            wrhrTranslateRefresh();
         } catch (e) {}
     });
 
@@ -721,9 +706,7 @@ jQuery(function($){
 
     // Whenever modal opens, restore language
     document.addEventListener('wrhr_modal_opened', function () {
-        wrhrRestoreLanguageOnOpen();
         wrhrRestoreLastLanguage();
-        wrhrTranslateRefresh();
     });
 
     // Final safety refresh after resize events
