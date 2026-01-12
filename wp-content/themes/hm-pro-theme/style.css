@@ -1,0 +1,17 @@
+/*
+Theme Name: HM Pro Theme
+Theme URI: https://example.com/hm-pro-theme
+Author: HM Studio
+Author URI: https://example.com
+Description: Lightweight, token-based premium e-commerce theme built for Elementor + WooCommerce.
+Version: 0.1.0
+Requires at least: 6.2
+Tested up to: 6.6
+Requires PHP: 7.4
+License: GPL v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: hmpro
+Tags: e-commerce, woocommerce, elementor, custom-menu, one-column, two-columns, translation-ready
+*/
+
+/* Minimal base. Real styles will live in assets/css/base.css */
